@@ -1,0 +1,11 @@
+{
+  "name": "Binary Clock",
+  "description": "Displays the time in binary-coded decimal(BCD)",
+  "url": "https://github.com/josephmawa/binary-clock",
+  "uuid": "binary-clocka@josephmawa.github.io",
+  "settings-schema": "org.gnome.shell.extensions.binary-clock",
+  "gettext-domain": "binary-clock",
+  "shell-version": [
+    "42"
+  ]
+}

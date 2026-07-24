@@ -1,0 +1,10 @@
+.bit {
+  width: 20px;
+  height: 20px;
+  border-radius: 20px;
+  background-color: gray;
+}
+
+.bit-blue-bg {
+  background-color: #3584e4;
+}
