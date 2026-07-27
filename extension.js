@@ -27,13 +27,14 @@ class Extension {
     const parentBox = new St.BoxLayout({
       vertical: false,
       style: "spacing: 10px;",
+      style_class: "main-box",
       x_align: Clutter.ActorAlign.CENTER,
       y_align: Clutter.ActorAlign.CENTER,
     });
 
-    this.hourBox = new BCDModule.Hour({ hour: 23 });
-    this.minuteBox = new BCDModule.MinutesOrSeconds({ value: 59 });
-    this.secondBox = new BCDModule.MinutesOrSeconds({ value: 59 });
+    this.hourBox = new BCDModule.Hour({ hour: 0 });
+    this.minuteBox = new BCDModule.MinutesOrSeconds({ value: 0 });
+    this.secondBox = new BCDModule.MinutesOrSeconds({ value: 0 });
 
     parentBox.add_child(this.hourBox);
     parentBox.add_child(this.minuteBox);
