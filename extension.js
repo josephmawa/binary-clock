@@ -1,4 +1,4 @@
-const { St, Clutter } = imports.gi;
+const { St, Clutter, GLib } = imports.gi;
 
 const ExtUtils = imports.misc.extensionUtils;
 
@@ -10,11 +10,10 @@ const Me = ExtUtils.getCurrentExtension();
 const BCDModule = Me.imports.bcd;
 
 class Extension {
-  constructor() {
-    this.timerId = null;
-  }
+  constructor() {}
 
   enable() {
+    this.timerId = null;
     this.panelBtn = new PanelMenu.Button(0.0, Me.metadata.name, false);
 
     const icon = new St.Icon({
@@ -46,10 +45,13 @@ class Extension {
     this.panelBtn.menu.connect("open-state-changed", (paneBtn, isOpen) => {
       this.intervalHandler();
       if (isOpen) {
-        this.timerId = setInterval(this.intervalHandler, 1000);
+        this.timerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1000, () => {
+          this.intervalHandler();
+          return GLib.SOURCE_CONTINUE;
+        });
       } else {
         if (this.timerId) {
-          clearInterval(this.timerId);
+          GLib.Source.remove(this.timerId);
           this.timerId = null;
         }
       }
@@ -68,8 +70,23 @@ class Extension {
 
   disable() {
     if (this.timerId) {
-      clearInterval(this.timerId);
+      GLib.Source.remove(this.timerId);
       this.timerId = null;
+    }
+
+    if (this.hourBox) {
+      this.hourBox.destroy();
+      this.hourBox = null;
+    }
+
+    if (this.minuteBox) {
+      this.minuteBox.destroy();
+      this.minuteBox = null;
+    }
+
+    if (this.secondBox) {
+      this.secondBox.destroy();
+      this.secondBox = null;
     }
 
     if (this.panelBtn) {
