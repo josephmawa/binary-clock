@@ -44,6 +44,17 @@ class Extension {
     section.actor.add_child(parentBox);
     this.panelBtn.menu.addMenuItem(section);
 
+    const separator = new PopupMenu.PopupSeparatorMenuItem();
+    this.panelBtn.menu.addMenuItem(separator);
+
+    const prefsSection = new PopupMenu.PopupMenuSection();
+    const prefsItem = new PopupMenu.PopupMenuItem("Preferences");
+    prefsItem.connect("activate", () => {
+      ExtUtils.openPrefs();
+    });
+    prefsSection.actor.add_child(prefsItem);
+    this.panelBtn.menu.addMenuItem(prefsSection);
+
     this.panelBtn.menu.connect("open-state-changed", (paneBtn, isOpen) => {
       this.intervalHandler();
       if (isOpen) {
