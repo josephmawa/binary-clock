@@ -204,3 +204,33 @@ var MinutesOrSeconds = GObject.registerClass(
     }
   },
 );
+
+var Powers = GObject.registerClass(
+  { GTypeName: "Powers" },
+  class Powers extends St.BoxLayout {
+    _init(params = {}) {
+      super._init({
+        vertical: true,
+        style: "spacing: 5px",
+        style_class: "powers",
+        y_align: Clutter.ActorAlign.END,
+      });
+
+      const powers = [8, 4, 2, 1];
+
+      for (const power of powers) {
+        const container = new St.Bin({
+          style: "height: 20px;",
+        });
+        const powWidget = new St.Label({
+          text: `${power}`,
+          y_align: Clutter.ActorAlign.CENTER,
+          y_align: Clutter.ActorAlign.CENTER,
+        });
+
+        container.set_child(powWidget)
+        this.add_child(container);
+      }
+    }
+  },
+);
