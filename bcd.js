@@ -219,16 +219,17 @@ var Powers = GObject.registerClass(
       const powers = [8, 4, 2, 1];
 
       for (const power of powers) {
-        const container = new St.Bin({
-          style: "height: 20px;",
-        });
-        const powWidget = new St.Label({
+        const label = new St.Label({
           text: `${power}`,
           y_align: Clutter.ActorAlign.CENTER,
           y_align: Clutter.ActorAlign.CENTER,
         });
 
-        container.set_child(powWidget)
+        const container = new St.Bin({
+          style_class: "bin",
+          child: label
+        });
+
         this.add_child(container);
       }
     }
