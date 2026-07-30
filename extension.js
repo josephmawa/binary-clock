@@ -31,12 +31,10 @@ class Extension {
       y_align: Clutter.ActorAlign.CENTER,
     });
 
-    this.powBox = new BCDModule.Powers();
     this.hourBox = new BCDModule.Hour({ hour: 0 });
     this.minuteBox = new BCDModule.MinutesOrSeconds({ value: 0 });
     this.secondBox = new BCDModule.MinutesOrSeconds({ value: 0 });
 
-    parentBox.add_child(this.powBox);
     parentBox.add_child(this.hourBox);
     parentBox.add_child(this.minuteBox);
     parentBox.add_child(this.secondBox);
@@ -48,7 +46,10 @@ class Extension {
     this.panelBtn.menu.addMenuItem(separator);
 
     const prefsSection = new PopupMenu.PopupMenuSection();
-    const prefsItem = new PopupMenu.PopupMenuItem("Preferences");
+    const prefsItem = new PopupMenu.PopupImageMenuItem(
+      "Preferences",
+      "preferences-system-symbolic",
+    );
     prefsItem.connect("activate", () => {
       ExtUtils.openPrefs();
     });
@@ -85,11 +86,6 @@ class Extension {
     if (this.timerId) {
       GLib.Source.remove(this.timerId);
       this.timerId = null;
-    }
-
-    if (this.powBox) {
-      this.powBox.destroy();
-      this.powBox = null;
     }
 
     if (this.hourBox) {

@@ -46,7 +46,7 @@ function buildPrefsWidget() {
   );
 
   const displayTimeRow = new Adw.ActionRow({
-    title: "Display time",
+    title: "Show decimal clock",
     activatable_widget: displayClockSwitch,
   });
   displayTimeRow.add_suffix(displayClockSwitch);

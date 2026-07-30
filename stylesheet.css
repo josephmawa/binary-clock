@@ -5,8 +5,13 @@
   background-color: gray;
 }
 
-.bin{
+.bin {
   height: 20px;
+}
+
+.time-unit-wrapper {
+  width: 20px;
+  font-family: monospace;
 }
 
 .bit-blue-bg {
