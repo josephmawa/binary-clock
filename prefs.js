@@ -15,13 +15,13 @@ function buildPrefsWidget() {
   });
   prefsPage.add(prefsGroup);
 
-  const timeFormatRow = new Adw.ActionRow({
-    title: "Use 24-hour format",
-  });
-  prefsGroup.add(timeFormatRow);
-
   const timeFormatSwitch = new Gtk.Switch({
     valign: Gtk.Align.CENTER,
+  });
+
+  const timeFormatRow = new Adw.ActionRow({
+    title: "Use 24-hour format",
+    activatable_widget: timeFormatSwitch,
   });
 
   settings.bind(
@@ -32,7 +32,25 @@ function buildPrefsWidget() {
   );
 
   timeFormatRow.add_suffix(timeFormatSwitch);
-  timeFormatRow.set_activatable_widget(timeFormatSwitch);
+  prefsGroup.add(timeFormatRow);
+
+  const displayClockSwitch = new Gtk.Switch({
+    valign: Gtk.Align.CENTER,
+  });
+
+  settings.bind(
+    "display-clock",
+    displayClockSwitch,
+    "active",
+    Gio.SettingsBindFlags.BIND_DEFAULT,
+  );
+
+  const displayTimeRow = new Adw.ActionRow({
+    title: "Display time",
+    activatable_widget: displayClockSwitch,
+  });
+  displayTimeRow.add_suffix(displayClockSwitch);
+  prefsGroup.add(displayTimeRow);
 
   return prefsPage;
 }
