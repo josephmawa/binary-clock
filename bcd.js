@@ -68,6 +68,13 @@ const Column = GObject.registerClass(
         GObject.ParamFlags.READWRITE,
         "00",
       ),
+      time_unit: GObject.ParamSpec.string(
+        "time_unit",
+        "timeUnit",
+        "Property that holds the hour, minute, and second",
+        GObject.ParamFlags.READWRITE,
+        "00",
+      ),
     },
   },
   class Column extends St.BoxLayout {
@@ -89,6 +96,7 @@ const Column = GObject.registerClass(
       this.len = params.len;
       this.num = params.num;
 
+      this.time_unit = `${this.num}`;
       this.bits = this.num.toString(2).padStart(this.len, "0");
 
       for (let i = 0; i < this.bits.length; i++) {
@@ -110,11 +118,31 @@ const Column = GObject.registerClass(
 
         this.add_child(bitWidget);
       }
+
+      const label = new St.Label({
+        y_align: Clutter.ActorAlign.CENTER,
+        x_align: Clutter.ActorAlign.CENTER,
+      });
+
+      this.bind_property(
+        "time_unit",
+        label,
+        "text",
+        GObject.BindingFlags.SYNC_CREATE,
+      );
+
+      const timeUnitWrapper = new St.Bin({
+        child: label,
+        style_class: "time-unit-wrapper",
+      });
+
+      this.add_child(timeUnitWrapper);
     }
 
     setBits(num = 0) {
       if (num == this.num) return;
       this.num = num;
+      this.time_unit = `${this.num}`;
       this.bits = this.num.toString(2).padStart(this.len, "0");
     }
   },

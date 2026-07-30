@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.binary-clock" path="/org/gnome/shell/extensions/binary-clock/">
+    <key name="twenty-four-hour-format" type="b">
+      <summary>Display time in 24 hour format</summary>
+      <default>true</default>
+    </key>
+    <key name="display-clock" type="b">
+      <summary>Display clock on UI</summary>
+      <default>true</default>
+    </key>
+  </schema>
+</schemalist>

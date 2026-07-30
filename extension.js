@@ -1,4 +1,4 @@
-const { St, Clutter } = imports.gi;
+const { St, Clutter, GLib } = imports.gi;
 
 const ExtUtils = imports.misc.extensionUtils;
 
@@ -10,11 +10,10 @@ const Me = ExtUtils.getCurrentExtension();
 const BCDModule = Me.imports.bcd;
 
 class Extension {
-  constructor() {
-    this.timerId = null;
-  }
+  constructor() {}
 
   enable() {
+    this.timerId = null;
     this.panelBtn = new PanelMenu.Button(0.0, Me.metadata.name, false);
 
     const icon = new St.Icon({
@@ -27,13 +26,14 @@ class Extension {
     const parentBox = new St.BoxLayout({
       vertical: false,
       style: "spacing: 10px;",
+      style_class: "main-box",
       x_align: Clutter.ActorAlign.CENTER,
       y_align: Clutter.ActorAlign.CENTER,
     });
 
-    this.hourBox = new BCDModule.Hour({ hour: 23 });
-    this.minuteBox = new BCDModule.MinutesOrSeconds({ value: 59 });
-    this.secondBox = new BCDModule.MinutesOrSeconds({ value: 59 });
+    this.hourBox = new BCDModule.Hour({ hour: 0 });
+    this.minuteBox = new BCDModule.MinutesOrSeconds({ value: 0 });
+    this.secondBox = new BCDModule.MinutesOrSeconds({ value: 0 });
 
     parentBox.add_child(this.hourBox);
     parentBox.add_child(this.minuteBox);
@@ -42,13 +42,30 @@ class Extension {
     section.actor.add_child(parentBox);
     this.panelBtn.menu.addMenuItem(section);
 
+    const separator = new PopupMenu.PopupSeparatorMenuItem();
+    this.panelBtn.menu.addMenuItem(separator);
+
+    const prefsSection = new PopupMenu.PopupMenuSection();
+    const prefsItem = new PopupMenu.PopupImageMenuItem(
+      "Preferences",
+      "preferences-system-symbolic",
+    );
+    prefsItem.connect("activate", () => {
+      ExtUtils.openPrefs();
+    });
+    prefsSection.actor.add_child(prefsItem);
+    this.panelBtn.menu.addMenuItem(prefsSection);
+
     this.panelBtn.menu.connect("open-state-changed", (paneBtn, isOpen) => {
       this.intervalHandler();
       if (isOpen) {
-        this.timerId = setInterval(this.intervalHandler, 1000);
+        this.timerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1000, () => {
+          this.intervalHandler();
+          return GLib.SOURCE_CONTINUE;
+        });
       } else {
         if (this.timerId) {
-          clearInterval(this.timerId);
+          GLib.Source.remove(this.timerId);
           this.timerId = null;
         }
       }
@@ -67,8 +84,23 @@ class Extension {
 
   disable() {
     if (this.timerId) {
-      clearInterval(this.timerId);
+      GLib.Source.remove(this.timerId);
       this.timerId = null;
+    }
+
+    if (this.hourBox) {
+      this.hourBox.destroy();
+      this.hourBox = null;
+    }
+
+    if (this.minuteBox) {
+      this.minuteBox.destroy();
+      this.minuteBox = null;
+    }
+
+    if (this.secondBox) {
+      this.secondBox.destroy();
+      this.secondBox = null;
     }
 
     if (this.panelBtn) {
