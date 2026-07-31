@@ -53,8 +53,15 @@ class Extension {
     prefsItem.connect("activate", () => {
       ExtUtils.openPrefs();
     });
-    prefsItem.setOrnament(PopupMenu.Ornament.HIDDEN)
-    prefsSection.actor.add_child(prefsItem);
+    prefsItem.setOrnament(PopupMenu.Ornament.HIDDEN);
+
+    const prefsBox = new St.BoxLayout({
+      x_align: Clutter.ActorAlign.CENTER,
+      y_align: Clutter.ActorAlign.CENTER,
+    });
+    prefsBox.add_child(prefsItem);
+
+    prefsSection.actor.add_child(prefsBox);
     this.panelBtn.menu.addMenuItem(prefsSection);
 
     this.panelBtn.menu.connect("open-state-changed", (paneBtn, isOpen) => {
