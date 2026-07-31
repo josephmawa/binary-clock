@@ -2,8 +2,7 @@
 
 ![Binary clock](./screenshots/binary-clock.png)
 
-A simple extension that displays the current time in decimal or Binary-coded Decimal(BCD).
-You may like it if you are a nerd.
+A nerdy Gnome shell extension that displays the current time in decimal or Binary-coded Decimal(BCD).
 
 ## Install
 
