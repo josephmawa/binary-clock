@@ -53,6 +53,7 @@ class Extension {
     prefsItem.connect("activate", () => {
       ExtUtils.openPrefs();
     });
+    prefsItem.setOrnament(PopupMenu.Ornament.HIDDEN)
     prefsSection.actor.add_child(prefsItem);
     this.panelBtn.menu.addMenuItem(prefsSection);
 
