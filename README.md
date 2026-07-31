@@ -6,9 +6,14 @@ A nerdy Gnome shell extension that displays the current time in decimal or Binar
 
 ## Install
 
-1. Navigate to the GNOME Shell Extensions [site](https://extensions.gnome.org/extension)
-2. Search binary-clock to install
+1. Navigate to [extensions.gnome.org](https://extensions.gnome.org/extension)
+2. To install, search for binary-clock
 
 ## Contributing
 
 PRs are welcome for bug fixes. However, for new features, first open an issue.
+
+## Acknowledgment
+
+The Makefile used in this project is derived from [Autohide Battery](https://github.com/ai/autohide-battery).
+A big thank you to Andrey Sitnik the maintainer.
