@@ -1,6 +1,7 @@
 const { St, Clutter, GLib } = imports.gi;
 
 const ExtUtils = imports.misc.extensionUtils;
+const { gettext: _, ngettext, pgettext } = ExtUtils;
 
 const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
@@ -56,7 +57,7 @@ class Extension {
 
     const prefsSection = new PopupMenu.PopupMenuSection();
     const prefsItem = new PopupMenu.PopupImageMenuItem(
-      "Preferences",
+      _("Preferences"),
       "preferences-system-symbolic",
     );
     prefsItem.connect("activate", () => {
@@ -141,5 +142,6 @@ class Extension {
 }
 
 function init() {
+  ExtUtils.initTranslations();
   return new Extension();
 }

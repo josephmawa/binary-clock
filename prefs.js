@@ -1,5 +1,6 @@
 const { Adw, Gtk, Gio } = imports.gi;
 const ExtUtils = imports.misc.extensionUtils;
+const { gettext: _, ngettext, pgettext } = ExtUtils;
 
 function init(metaData) {}
 
@@ -7,11 +8,11 @@ function buildPrefsWidget() {
   const settings = ExtUtils.getSettings();
   const prefsPage = new Adw.PreferencesPage({
     name: "general",
-    title: "General",
+    title: _("General"),
   });
 
   const prefsGroup = new Adw.PreferencesGroup({
-    title: "Preferences",
+    title: _("Preferences"),
   });
   prefsPage.add(prefsGroup);
 
@@ -20,7 +21,7 @@ function buildPrefsWidget() {
   });
 
   const timeFormatRow = new Adw.ActionRow({
-    title: "Use 24-hour format",
+    title: _("Use 24-hour format"),
     activatable_widget: timeFormatSwitch,
   });
 
@@ -46,7 +47,7 @@ function buildPrefsWidget() {
   );
 
   const displayTimeRow = new Adw.ActionRow({
-    title: "Show decimal clock",
+    title: _("Show decimal clock"),
     activatable_widget: displayClockSwitch,
   });
   displayTimeRow.add_suffix(displayClockSwitch);
