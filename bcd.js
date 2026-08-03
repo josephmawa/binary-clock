@@ -1,4 +1,5 @@
-const { GObject, St, Clutter } = imports.gi;
+const { GObject, St, Clutter, Gio } = imports.gi;
+const ExtUtils = imports.misc.extensionUtils;
 
 const BitWidget = GObject.registerClass(
   {
@@ -137,6 +138,14 @@ const Column = GObject.registerClass(
       });
 
       this.add_child(timeUnitWrapper);
+
+      const settings = ExtUtils.getSettings();
+      settings.bind(
+        "display-clock",
+        timeUnitWrapper,
+        "visible",
+        Gio.SettingsBindFlags.BIND_DEFAULT,
+      );
     }
 
     setBits(num = 0) {
