@@ -120,32 +120,60 @@ const Column = GObject.registerClass(
         this.add_child(bitWidget);
       }
 
-      const label = new St.Label({
+      this._label = new St.Label({
         y_align: Clutter.ActorAlign.CENTER,
         x_align: Clutter.ActorAlign.CENTER,
       });
+      this.bindTimeUnit();
 
-      this.bind_property(
-        "time_unit",
-        label,
-        "text",
-        GObject.BindingFlags.SYNC_CREATE,
-      );
-
-      const timeUnitWrapper = new St.Bin({
-        child: label,
+      this._timeUnitWrapper = new St.Bin({
+        child: this._label,
         style_class: "time-unit-wrapper",
       });
 
-      this.add_child(timeUnitWrapper);
+      this._timeUnitWrapper.connect("notify::visible", () => {
+        if (this._timeUnitWrapper.visible) {
+          this.bindTimeUnit();
+        } else {
+          this.unbindTimeUnit();
+        }
+      });
+
+      this.add_child(this._timeUnitWrapper);
 
       const settings = ExtUtils.getSettings();
       settings.bind(
         "display-clock",
-        timeUnitWrapper,
+        this._timeUnitWrapper,
         "visible",
         Gio.SettingsBindFlags.BIND_DEFAULT,
       );
+    }
+
+    bindTimeUnit() {
+      if (
+        this._timeUnitBinding &&
+        this._timeUnitBinding instanceof GObject.Binding
+      ) {
+        this._timeUnitBinding.unbind();
+      }
+
+      this._timeUnitBinding = this.bind_property(
+        "time_unit",
+        this._label,
+        "text",
+        GObject.BindingFlags.SYNC_CREATE,
+      );
+    }
+
+    unbindTimeUnit() {
+      if (
+        this._timeUnitBinding &&
+        this._timeUnitBinding instanceof GObject.Binding
+      ) {
+        this._timeUnitBinding.unbind();
+        this._timeUnitBinding = null;
+      }
     }
 
     setBits(num = 0) {
