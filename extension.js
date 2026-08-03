@@ -9,12 +9,21 @@ const PopupMenu = imports.ui.popupMenu;
 const Me = ExtUtils.getCurrentExtension();
 const BCDModule = Me.imports.bcd;
 
+let USE_24_HRS = null;
+
 class Extension {
   constructor() {}
 
   enable() {
     this.timerId = null;
     this.panelBtn = new PanelMenu.Button(0.0, Me.metadata.name, false);
+
+    this.settings = ExtUtils.getSettings();
+    this.timeFormatHandler();
+    this.settings.connect(
+      "changed::twenty-four-hour-format",
+      this.timeFormatHandler,
+    );
 
     const icon = new St.Icon({
       icon_name: "emoji-recent-symbolic",
@@ -82,10 +91,19 @@ class Extension {
     Main.panel.addToStatusArea(Me.metadata.uuid, this.panelBtn, 0);
   }
 
+  timeFormatHandler = () => {
+    if (!this.settings) this.settings = ExtUtils.getSettings();
+    USE_24_HRS = this.settings.get_boolean("twenty-four-hour-format");
+  };
+
   intervalHandler = () => {
     const date = new Date();
+    let hours = date.getHours();
+    if (USE_24_HRS === false && hours > 12) {
+      hours = hours - 12;
+    }
 
-    this.hourBox.setHour(date.getHours());
+    this.hourBox.setHour(hours);
     this.minuteBox.setValue(date.getMinutes());
     this.secondBox.setValue(date.getSeconds());
   };
@@ -114,6 +132,10 @@ class Extension {
     if (this.panelBtn) {
       this.panelBtn.destroy();
       this.panelBtn = null;
+    }
+
+    if (USE_24_HRS !== null) {
+      USE_24_HRS = null;
     }
   }
 }
