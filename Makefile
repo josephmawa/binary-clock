@@ -5,7 +5,7 @@ POT_FILE  := $(PO_DIR)/binary-clock.pot
 .PHONY: extract-pot test clean build local
 
 extract-pot:
-	mkdir -p PO_DIR
+	mkdir -p $(PO_DIR)
 	flatpak run \
 	--command=xgettext \
 	--filesystem=host \
