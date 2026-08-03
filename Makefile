@@ -15,6 +15,19 @@ extract-pot:
 	--output="$(POT_FILE)" \
 	*.js
 
+create-po:
+ifndef LOCALE
+	$(error LOCALE is not set. Run make create-po LOCALE=fr)
+endif
+	flatpak run \
+	--command=msginit \
+	--filesystem=host \
+	--cwd="$(PROJECT_DIR)" \
+	org.gnome.Sdk/x86_64/50 \
+	--input=po/binary-clock.pot \
+	--output-file="$(PO_DIR)/$(LOCALE).po" \
+	--locale=$(LOCALE)
+
 test: build
 
 clean:
