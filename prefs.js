@@ -2,7 +2,9 @@ const { Adw, Gtk, Gio } = imports.gi;
 const ExtUtils = imports.misc.extensionUtils;
 const { gettext: _, ngettext, pgettext } = ExtUtils;
 
-function init(metaData) {}
+function init(metaData) {
+  ExtUtils.initTranslations();
+}
 
 function buildPrefsWidget() {
   const settings = ExtUtils.getSettings();
