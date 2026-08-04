@@ -2,27 +2,13 @@
 
 create-pot:
 	mkdir -p $(CURDIR)/po
-	flatpak run \
-	--command=xgettext \
-	--filesystem=host \
-	--cwd=$(CURDIR) \
-	org.gnome.Sdk/x86_64/50 \
-	--from-code=UTF-8 \
-	--output=po/binary-clock.pot \
-	*.js
+	xgettext --from-code=UTF-8 --output=po/binary-clock.pot *.js
 
 create-po:
 ifndef LOCALE
-	$(error LOCALE is not set. Run "make create-po LOCALE=fr")
+	$(error LOCALE is not set. Run "make create-po LOCALE=ll_CC[.ENCODING]")
 endif
-	flatpak run \
-	--command=msginit \
-	--filesystem=host \
-	--cwd=$(CURDIR) \
-	org.gnome.Sdk/x86_64/50 \
-	--input=po/binary-clock.pot \
-	--output-file=po/$(LOCALE).po \
-	--locale=$(LOCALE)
+	msginit --input=po/binary-clock.pot --output-file=po/$(LOCALE).po --locale=$(LOCALE)
 
 test: build
 
