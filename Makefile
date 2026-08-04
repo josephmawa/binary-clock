@@ -1,31 +1,27 @@
-PROJECT_DIR := $(CURDIR)
-PO_DIR := $(PROJECT_DIR)/po
-POT_FILE  := $(PO_DIR)/binary-clock.pot
+.PHONY: create-pot create-po test clean build local
 
-.PHONY: extract-pot test clean build local
-
-extract-pot:
-	mkdir -p $(PO_DIR)
+create-pot:
+	mkdir -p $(CURDIR)/po
 	flatpak run \
 	--command=xgettext \
 	--filesystem=host \
-	--cwd="$(PROJECT_DIR)" \
+	--cwd=$(CURDIR) \
 	org.gnome.Sdk/x86_64/50 \
 	--from-code=UTF-8 \
-	--output="$(POT_FILE)" \
+	--output=po/binary-clock.pot \
 	*.js
 
 create-po:
 ifndef LOCALE
-	$(error LOCALE is not set. Run make create-po LOCALE=fr)
+	$(error LOCALE is not set. Run "make create-po LOCALE=fr")
 endif
 	flatpak run \
 	--command=msginit \
 	--filesystem=host \
-	--cwd="$(PROJECT_DIR)" \
+	--cwd=$(CURDIR) \
 	org.gnome.Sdk/x86_64/50 \
 	--input=po/binary-clock.pot \
-	--output-file="$(PO_DIR)/$(LOCALE).po" \
+	--output-file=po/$(LOCALE).po \
 	--locale=$(LOCALE)
 
 test: build
