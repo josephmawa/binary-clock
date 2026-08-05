@@ -1,4 +1,4 @@
-.PHONY: create-pot create-po test clean build local
+.PHONY: create-pot-file create-po-file update-po-file test clean build local
 
 create-pot-file:
 	mkdir -p $(CURDIR)/po
