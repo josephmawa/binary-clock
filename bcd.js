@@ -269,3 +269,108 @@ var MinutesOrSeconds = GObject.registerClass(
     }
   },
 );
+
+const Binary = GObject.registerClass(
+  {
+    GTypeName: "Binary",
+    Properties: {
+      bin_time: GObject.ParamSpec.string(
+        "bin_time",
+        "binTime",
+        "Current binary time",
+        GObject.ParamFlags.READWRITE,
+        "0".repeat(16),
+      ),
+    },
+  },
+  class Binary extends St.Widget {
+    _init(params = {}) {
+      super._init({
+        x_expand: false,
+        y_expand: true,
+        x_align: Clutter.ActorAlign.CENTER,
+        y_align: Clutter.ActorAlign.CENTER,
+      });
+
+      const gridLayout = new Clutter.GridLayout({
+        row_spacing: 5,
+        column_spacing: 5,
+        row_homogeneous: true,
+        column_homogeneous: true,
+      });
+
+      this.layout_manager = gridLayout;
+      const GRID_COLUMNS = 4;
+
+      for (let i = 0; i < 16; i++) {
+        const col = i % GRID_COLUMNS;
+        const row = Math.floor(i / GRID_COLUMNS);
+
+        const bitWidget = new BitWidget();
+
+        this.bind_property_full(
+          "bin_time",
+          bitWidget,
+          "bit",
+          GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
+          (_, val) => {
+            return [true, val[i]];
+          },
+          null,
+        );
+
+        this.layout_manager.attach(bitWidget, col, row, 1, 1);
+        this.add_child(bitWidget);
+      }
+    }
+  },
+);
+
+var BinaryClock = GObject.registerClass(
+  {
+    GTypeName: "BinaryClock",
+  },
+  class BinaryClock extends St.BoxLayout {
+    _init(params = {}) {
+      super._init({
+        vertical: true,
+        style: "spacing: 5px;",
+        x_expand: true,
+        y_expand: true,
+      });
+
+      this._binaryClock = new Binary();
+      this.add_child(this._binaryClock);
+
+      this._binaryClockLabel = new St.Label({
+        x_align: Clutter.ActorAlign.CENTER,
+        y_align: Clutter.ActorAlign.CENTER,
+        style: "font-family: monospace;",
+      });
+
+      this.add_child(this._binaryClockLabel);
+    }
+
+    setBinClock(binClock) {
+      this._binaryClock.bin_time = binClock;
+      this._binaryClockLabel.text = binClock;
+    }
+  },
+);
+
+var convertToBinClock = function (n) {
+  const bits = [];
+  let num = n;
+
+  while (bits.length < 16 && num > 0) {
+    num *= 2;
+    if (num >= 1) {
+      bits.push(1);
+      num -= 1;
+      continue;
+    }
+    bits.push(0);
+  }
+
+  return bits.join("").padEnd(16, "0");
+};
