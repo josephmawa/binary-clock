@@ -143,7 +143,7 @@ const Column = GObject.registerClass(
 
       const settings = ExtUtils.getSettings();
       settings.bind(
-        "display-clock",
+        "display-numeric-clock-bcd",
         this._timeUnitWrapper,
         "visible",
         Gio.SettingsBindFlags.BIND_DEFAULT,

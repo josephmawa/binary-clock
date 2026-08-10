@@ -22,7 +22,7 @@ clean:
 	rm -f *.zip
 
 build: clean
-	gnome-extensions pack ./ --extra-source=bcd.js
+	gnome-extensions pack ./ --extra-source=bcd.js --extra-source=prefs.ui
 
 local: build
 	gnome-extensions install -f *.zip

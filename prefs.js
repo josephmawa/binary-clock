@@ -6,54 +6,57 @@ function init(metaData) {
   ExtUtils.initTranslations();
 }
 
-function buildPrefsWidget() {
+function fillPreferencesWindow(window) {
+  const me = ExtUtils.getCurrentExtension();
   const settings = ExtUtils.getSettings();
-  const prefsPage = new Adw.PreferencesPage({
-    name: "general",
-    title: _("General"),
-  });
 
-  const prefsGroup = new Adw.PreferencesGroup({
-    title: _("Preferences"),
-  });
-  prefsPage.add(prefsGroup);
+  const builder = new Gtk.Builder();
+  const uiFile = me.dir.get_child("prefs.ui").get_path();
+  builder.add_from_file(uiFile);
 
-  const timeFormatSwitch = new Gtk.Switch({
-    valign: Gtk.Align.CENTER,
-  });
+  const page = builder.get_object("prefs_page");
+  window.add(page);
 
-  const timeFormatRow = new Adw.ActionRow({
-    title: _("Use 24-hour format"),
-    activatable_widget: timeFormatSwitch,
-  });
+  const clockType = settings.get_string("clock-type");
 
+  const bcdCheckBtn = builder.get_object("bcd_check_btn");
+  bcdCheckBtn.active = clockType === "bcd";
+  const binCheckBtn = builder.get_object("bin_check_btn");
+  binCheckBtn.active = clockType === "bin";
+
+  const bcdDisplayNumericClock = builder.get_object(
+    "bcd_display_numeric_clock",
+  );
   settings.bind(
-    "twenty-four-hour-format",
-    timeFormatSwitch,
+    "display-numeric-clock-bcd",
+    bcdDisplayNumericClock,
     "active",
-    Gio.SettingsBindFlags.BIND_DEFAULT,
+    Gio.SettingsBindFlags.DEFAULT,
   );
 
-  timeFormatRow.add_suffix(timeFormatSwitch);
-  prefsGroup.add(timeFormatRow);
+  const numericClockFormatBcd = settings.get_string("numeric-clock-format-bcd");
 
-  const displayClockSwitch = new Gtk.Switch({
-    valign: Gtk.Align.CENTER,
-  });
+  const twelveHrClockCheckBtn = builder.get_object("twelve_hr_clock_btn");
+  twelveHrClockCheckBtn.active = numericClockFormatBcd === "twelve-hr-format";
+  const twentyFourHrClockCheckBtn = builder.get_object(
+    "twenty_four_hr_clock_btn",
+  );
+  twentyFourHrClockCheckBtn.active =
+    numericClockFormatBcd === "twenty-four-hr-format";
 
+  const binDisplayNumericClock = builder.get_object(
+    "bin_display_numeric_clock",
+  );
   settings.bind(
-    "display-clock",
-    displayClockSwitch,
+    "display-numeric-clock-bin",
+    binDisplayNumericClock,
     "active",
-    Gio.SettingsBindFlags.BIND_DEFAULT,
+    Gio.SettingsBindFlags.DEFAULT,
   );
 
-  const displayTimeRow = new Adw.ActionRow({
-    title: _("Show decimal clock"),
-    activatable_widget: displayClockSwitch,
-  });
-  displayTimeRow.add_suffix(displayClockSwitch);
-  prefsGroup.add(displayTimeRow);
-
-  return prefsPage;
+  const numericClockFormatBin = settings.get_string("numeric-clock-format-bin");
+  const binNumericClockBtn = builder.get_object("bin_numeric_clock_btn");
+  binNumericClockBtn.active = numericClockFormatBin === "bin";
+  const decNumericClockBtn = builder.get_object("dec_numeric_clock_btn");
+  decNumericClockBtn.active = numericClockFormatBin === "dec";
 }

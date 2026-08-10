@@ -11,7 +11,7 @@ const Me = ExtUtils.getCurrentExtension();
 const BCDModule = Me.imports.bcd;
 
 let USE_24_HRS = null;
-let DISPLAY_BCD = null;
+let CLOCK_TYPE = null;
 
 const SEC_MS = 1000;
 const MIN_MS = 60 * SEC_MS;
@@ -81,18 +81,18 @@ class Extension {
     this.createUI();
 
     this.panelBtn.menu.connect("open-state-changed", (panelBtn, isOpen) => {
-      if (!DISPLAY_BCD && isOpen) {
+      if (CLOCK_TYPE === "bin" && isOpen) {
         this.binaryClockHandler();
         return;
       }
 
-      if (!DISPLAY_BCD && !isOpen) {
+      if (CLOCK_TYPE === "bin" && !isOpen) {
         clearTimeout(this._timeOutId);
         this._timeOutId = null;
         return;
       }
 
-      if (DISPLAY_BCD && isOpen) {
+      if (CLOCK_TYPE === "bcd" && isOpen) {
         this.bcdClockHandler();
         this.timerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1000, () => {
           this.bcdClockHandler();
@@ -101,7 +101,7 @@ class Extension {
         return;
       }
 
-      if (DISPLAY_BCD && !isOpen) {
+      if (CLOCK_TYPE === "bcd" && !isOpen) {
         if (this.timerId) {
           GLib.Source.remove(this.timerId);
           this.timerId = null;
@@ -121,7 +121,7 @@ class Extension {
       this.timerId = null;
     }
 
-    const displayBcd = this.settings.get_boolean("display-bcd");
+    const displayBcd = this.settings.get_boolean("display-numeric-clock-bcd");
     if (displayBcd) {
       this._binWrapper.set_child(this.bcdClock);
       return;
@@ -139,12 +139,15 @@ class Extension {
     this.settings = ExtUtils.getSettings();
     this.timeFormatHandler();
     this.settings.connect(
-      "changed::twenty-four-hour-format",
+      "changed::display-numeric-clock-bcd",
       this.timeFormatHandler,
     );
 
     this.UIFormatHandler();
-    this.settings.connect("changed::display-bcd", this.UIFormatHandler);
+    this.settings.connect(
+      "changed::display-numeric-clock-bcd",
+      this.UIFormatHandler,
+    );
   }
 
   createBCDclock() {
@@ -169,12 +172,12 @@ class Extension {
 
   timeFormatHandler = () => {
     if (!this.settings) this.settings = ExtUtils.getSettings();
-    USE_24_HRS = this.settings.get_boolean("twenty-four-hour-format");
+    USE_24_HRS = this.settings.get_boolean("display-numeric-clock-bcd");
   };
 
   UIFormatHandler = () => {
     if (!this.settings) this.settings = ExtUtils.getSettings();
-    DISPLAY_BCD = this.settings.get_boolean("display-bcd");
+    CLOCK_TYPE = this.settings.get_boolean("clock-type");
   };
 
   bcdClockHandler = () => {
