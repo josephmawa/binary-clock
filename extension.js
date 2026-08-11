@@ -173,7 +173,6 @@ class Extension {
 
   clockTypeHandler = () => {
     CLOCK_TYPE = this.settings.get_string("clock-type");
-    console.log(CLOCK_TYPE);
   };
 
   displayNumericClockBcdHandler = () => {
@@ -242,9 +241,17 @@ class Extension {
     const msElapsed = hrs * HOUR_MS + min * MIN_MS + sec * SEC_MS + mil;
 
     const ratio = msElapsed / DAY_MS;
-    const binClock = BCDModule.convertToBinClock(ratio);
+    const clockBin = BCDModule.convertToBinClock(ratio);
+    this._binaryClock.setBinClock(clockBin);
 
-    this._binaryClock.setBinClock(binClock);
+    if (DISPLAY_NUMERIC_CLOCK_BIN === true) {
+      let displayClock = clockBin;
+      if (NUMERIC_CLOCK_FORMAT_BIN === "dec") {
+        displayClock = parseInt(clockBin, 2).toString(10);
+      }
+      this._binaryClock.setBinClockLabel(displayClock);
+    }
+
     const msLeft = DURATION - (msElapsed % DURATION);
     this._timeOutId = setTimeout(this.binaryClockHandler, msLeft);
   };

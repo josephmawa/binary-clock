@@ -5,10 +5,10 @@
   <object class="AdwPreferencesPage" id="prefs_page">
     <child>
       <object class="AdwPreferencesGroup">
-        <property name="title" translatable="true">Clock type</property>
+        <property name="title" translatable="yes">Clock type</property>
         <child>
           <object class="AdwActionRow">
-            <property name="title">BCD clock</property>
+            <property name="title" translatable="yes">BCD clock</property>
             <property name="activatable_widget">bcd_check_btn</property>
             <child type="prefix">
               <object class="GtkCheckButton" id="bcd_check_btn">
@@ -20,7 +20,7 @@
         </child>
         <child>
           <object class="AdwActionRow">
-            <property name="title" translatable="true">Binary clock</property>
+            <property name="title" translatable="yes">Binary clock</property>
             <property name="activatable_widget">bin_check_btn</property>
             <child type="prefix">
               <object class="GtkCheckButton" id="bin_check_btn">
@@ -37,7 +37,7 @@
         <property name="title" translatable="yes">BCD clock settings</property>
         <child>
           <object class="AdwActionRow">
-            <property name="title" translatable="true">Display numeric clock</property>
+            <property name="title" translatable="yes">Display numeric clock</property>
             <property name="activatable_widget">bcd_display_numeric_clock</property>
             <child type="suffix">
               <object class="GtkSwitch" id="bcd_display_numeric_clock">
@@ -49,9 +49,10 @@
         <child>
           <object class="AdwExpanderRow" id="bcd_expander_row">
             <property name="title" translatable="yes">Numeric clock format</property>
+            <property name="expanded">true</property>
             <child>
               <object class="AdwActionRow">
-                <property name="title">12-hour format</property>
+                <property name="title" translatable="yes">12-hour format</property>
                 <property name="activatable_widget">twelve_hr_clock_btn</property>
                 <child type="prefix">
                   <object class="GtkCheckButton" id="twelve_hr_clock_btn">
@@ -63,7 +64,7 @@
             </child>
             <child>
               <object class="AdwActionRow">
-                <property name="title">24-hour format</property>
+                <property name="title" translatable="yes">24-hour format</property>
                 <property name="activatable_widget">twenty_four_hr_clock_btn</property>
                 <child type="prefix">
                   <object class="GtkCheckButton" id="twenty_four_hr_clock_btn">
@@ -82,7 +83,7 @@
         <property name="title" translatable="yes">Binary clock settings</property>
         <child>
           <object class="AdwActionRow">
-            <property name="title" translatable="true">Display numeric clock</property>
+            <property name="title" translatable="yes">Display numeric clock</property>
             <property name="activatable_widget">bin_display_numeric_clock</property>
             <child type="suffix">
               <object class="GtkSwitch" id="bin_display_numeric_clock">
@@ -94,9 +95,10 @@
         <child>
           <object class="AdwExpanderRow" id="bin_expander_row">
             <property name="title" translatable="yes">Numeric clock format</property>
+            <property name="expanded">true</property>
             <child>
               <object class="AdwActionRow">
-                <property name="title">Binary</property>
+                <property name="title" translatable="yes">Binary</property>
                 <property name="activatable_widget">bin_numeric_clock_btn</property>
                 <child type="prefix">
                   <object class="GtkCheckButton" id="bin_numeric_clock_btn">
@@ -108,7 +110,7 @@
             </child>
             <child>
               <object class="AdwActionRow">
-                <property name="title">Decimal</property>
+                <property name="title" translatable="yes">Decimal</property>
                 <property name="activatable_widget">dec_numeric_clock_btn</property>
                 <child type="prefix">
                   <object class="GtkCheckButton" id="dec_numeric_clock_btn">

@@ -347,13 +347,22 @@ var BinaryClock = GObject.registerClass(
         y_align: Clutter.ActorAlign.CENTER,
         style: "font-family: monospace;",
       });
-
       this.add_child(this._binaryClockLabel);
+
+      const settings = ExtUtils.getSettings();
+      settings.bind(
+        "display-numeric-clock-bin",
+        this._binaryClockLabel,
+        "visible",
+        Gio.SettingsBindFlags.BIND_DEFAULT,
+      );
     }
 
     setBinClock(binClock) {
       this._binaryClock.bin_time = binClock;
-      this._binaryClockLabel.text = binClock;
+    }
+    setBinClockLabel(displayClock) {
+      this._binaryClockLabel.text = displayClock;
     }
   },
 );
