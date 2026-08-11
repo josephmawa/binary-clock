@@ -18,11 +18,21 @@ function fillPreferencesWindow(window) {
   window.add(page);
 
   const clockType = settings.get_string("clock-type");
-
-  const bcdCheckBtn = builder.get_object("bcd_check_btn");
-  bcdCheckBtn.active = clockType === "bcd";
   const binCheckBtn = builder.get_object("bin_check_btn");
-  binCheckBtn.active = clockType === "bin";
+  const bcdCheckBtn = builder.get_object("bcd_check_btn");
+  if (clockType === "bin") {
+    binCheckBtn.active = true;
+  } else {
+    bcdCheckBtn.active = true;
+  }
+
+  binCheckBtn.connect("notify::active", () => {
+    if (binCheckBtn.active) {
+      settings.set_string("clock-type", "bin");
+      return;
+    }
+    settings.set_string("clock-type", "bcd");
+  });
 
   const bcdDisplayNumericClock = builder.get_object(
     "bcd_display_numeric_clock",

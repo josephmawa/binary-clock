@@ -10,8 +10,11 @@ const PopupMenu = imports.ui.popupMenu;
 const Me = ExtUtils.getCurrentExtension();
 const BCDModule = Me.imports.bcd;
 
-let USE_24_HRS = null;
 let CLOCK_TYPE = null;
+let DISPLAY_NUMERIC_CLOCK_BCD = null;
+let NUMERIC_CLOCK_FORMAT_BCD = null;
+let DISPLAY_NUMERIC_CLOCK_BIN = null;
+let NUMERIC_CLOCK_FORMAT_BIN = null;
 
 const SEC_MS = 1000;
 const MIN_MS = 60 * SEC_MS;
@@ -73,14 +76,17 @@ class Extension {
 
     // Bind settings
     this.bindSettings();
-    // Create UIs and add them to the dropdown as the user changes
-    // settings
+    // Creates UIs which are added to the dropdown as settings change
     this.createBinClock();
     this.createBCDclock();
     // Call this method after creating Binary and BCD clocks
     this.createUI();
 
     this.panelBtn.menu.connect("open-state-changed", (panelBtn, isOpen) => {
+      if (isOpen) {
+        this.createUI();
+      }
+
       if (CLOCK_TYPE === "bin" && isOpen) {
         this.binaryClockHandler();
         return;
@@ -121,13 +127,14 @@ class Extension {
       this.timerId = null;
     }
 
-    const displayBcd = this.settings.get_boolean("display-numeric-clock-bcd");
-    if (displayBcd) {
+    const clockType = this.settings.get_string("clock-type");
+    if (clockType === "bcd") {
       this._binWrapper.set_child(this.bcdClock);
-      return;
+    } else if (clockType === "bin") {
+      this._binWrapper.set_child(this._binaryClock);
+    } else {
+      throw new Error("Unknown clock-type string setting");
     }
-
-    this._binWrapper.set_child(this._binaryClock);
   }
 
   createBinClock() {
@@ -137,18 +144,61 @@ class Extension {
 
   bindSettings() {
     this.settings = ExtUtils.getSettings();
-    this.timeFormatHandler();
-    this.settings.connect(
-      "changed::display-numeric-clock-bcd",
-      this.timeFormatHandler,
-    );
 
-    this.UIFormatHandler();
-    this.settings.connect(
-      "changed::display-numeric-clock-bcd",
-      this.UIFormatHandler,
-    );
+    this.clockTypeHandler();
+    this.settings.connect("changed::clock-type", () => {
+      this.clockTypeHandler();
+    });
+
+    this.displayNumericClockBcdHandler();
+    this.settings.connect("changed::display-numeric-clock-bcd", () => {
+      this.displayNumericClockBcdHandler();
+    });
+
+    this.numericClockFormatBcdHandler();
+    this.settings.connect("changed::numeric-clock-format-bcd", () => {
+      this.numericClockFormatBcdHandler();
+    });
+
+    this.displayNumericClockBin();
+    this.settings.connect("changed::display-numeric-clock-bin", () => {
+      this.displayNumericClockBin();
+    });
+
+    this.numericClockFormatBinHandler();
+    this.settings.connect("changed::numeric-clock-format-bin", () => {
+      this.numericClockFormatBinHandler();
+    });
   }
+
+  clockTypeHandler = () => {
+    CLOCK_TYPE = this.settings.get_string("clock-type");
+    console.log(CLOCK_TYPE);
+  };
+
+  displayNumericClockBcdHandler = () => {
+    DISPLAY_NUMERIC_CLOCK_BCD = this.settings.get_boolean(
+      "display-numeric-clock-bcd",
+    );
+  };
+
+  numericClockFormatBcdHandler = () => {
+    NUMERIC_CLOCK_FORMAT_BCD = this.settings.get_string(
+      "numeric-clock-format-bcd",
+    );
+  };
+
+  displayNumericClockBin = () => {
+    DISPLAY_NUMERIC_CLOCK_BIN = this.settings.get_boolean(
+      "display-numeric-clock-bin",
+    );
+  };
+
+  numericClockFormatBinHandler = () => {
+    NUMERIC_CLOCK_FORMAT_BIN = this.settings.get_string(
+      "numeric-clock-format-bin",
+    );
+  };
 
   createBCDclock() {
     this.timerId = null;
@@ -170,20 +220,10 @@ class Extension {
     this.bcdClock.add_child(this.secondBox);
   }
 
-  timeFormatHandler = () => {
-    if (!this.settings) this.settings = ExtUtils.getSettings();
-    USE_24_HRS = this.settings.get_boolean("display-numeric-clock-bcd");
-  };
-
-  UIFormatHandler = () => {
-    if (!this.settings) this.settings = ExtUtils.getSettings();
-    CLOCK_TYPE = this.settings.get_boolean("clock-type");
-  };
-
   bcdClockHandler = () => {
     const date = new Date();
     let hours = date.getHours();
-    if (USE_24_HRS === false && hours > 12) {
+    if (NUMERIC_CLOCK_FORMAT_BCD === "twelve-hr-format" && hours > 12) {
       hours = hours - 12;
     }
 
@@ -233,10 +273,6 @@ class Extension {
     if (this.panelBtn) {
       this.panelBtn.destroy();
       this.panelBtn = null;
-    }
-
-    if (USE_24_HRS !== null) {
-      USE_24_HRS = null;
     }
   }
 }
