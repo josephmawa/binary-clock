@@ -2,7 +2,7 @@
 
 create-pot-file:
 	mkdir -p $(CURDIR)/po
-	xgettext --from-code=UTF-8 --output=po/binary-clock.pot *.js
+	xgettext --from-code=UTF-8 --output=po/binary-clock.pot *.js *.ui
 
 create-po-file:
 ifndef LOCALE

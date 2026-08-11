@@ -8,9 +8,12 @@ function init(metaData) {
 
 function fillPreferencesWindow(window) {
   const me = ExtUtils.getCurrentExtension();
+  const gettextDomain = me.metadata["gettext-domain"];
   const settings = ExtUtils.getSettings();
 
   const builder = new Gtk.Builder();
+  builder.set_translation_domain(gettextDomain);
+
   const prefsFile = me.dir.get_child("prefs.ui").get_path();
   builder.add_from_file(prefsFile);
 

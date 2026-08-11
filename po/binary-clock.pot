@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-03 20:34+0300\n"
+"POT-Creation-Date: 2026-08-11 18:15+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,18 +17,50 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: extension.js:60 prefs.js:15
+#: extension.js:60
 msgid "Preferences"
 msgstr ""
 
-#: prefs.js:11
-msgid "General"
+#: prefs.ui:8
+msgid "Clock type"
 msgstr ""
 
-#: prefs.js:24
-msgid "Use 24-hour format"
+#: prefs.ui:11
+msgid "BCD clock"
 msgstr ""
 
-#: prefs.js:50
-msgid "Show decimal clock"
+#: prefs.ui:23
+msgid "Binary clock"
+msgstr ""
+
+#: prefs.ui:37
+msgid "BCD clock settings"
+msgstr ""
+
+#: prefs.ui:40 prefs.ui:86
+msgid "Display numeric clock"
+msgstr ""
+
+#: prefs.ui:51 prefs.ui:97
+msgid "Numeric clock format"
+msgstr ""
+
+#: prefs.ui:55
+msgid "12-hour format"
+msgstr ""
+
+#: prefs.ui:67
+msgid "24-hour format"
+msgstr ""
+
+#: prefs.ui:83
+msgid "Binary clock settings"
+msgstr ""
+
+#: prefs.ui:101
+msgid "Binary"
+msgstr ""
+
+#: prefs.ui:113
+msgid "Decimal"
 msgstr ""
