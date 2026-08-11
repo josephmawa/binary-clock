@@ -1,13 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
   <schema id="org.gnome.shell.extensions.binary-clock" path="/org/gnome/shell/extensions/binary-clock/">
-    <key name="twenty-four-hour-format" type="b">
-      <summary>Display time in 24 hour format</summary>
+    <key name="clock-type" type="s">
+      <summary>Type of binary clock to display</summary>
+      <choices>
+        <choice value="bcd" />
+        <choice value="bin" />
+      </choices>
+      <default>"bcd"</default>
+    </key>
+    <key name="display-numeric-clock-bcd" type="b">
+      <summary>Display numeric clock in BCD clock UI</summary>
       <default>true</default>
     </key>
-    <key name="display-clock" type="b">
-      <summary>Display clock on UI</summary>
+     <key name="numeric-clock-format-bcd" type="s">
+      <choices>
+        <choice value="twelve-hr-format" />
+        <choice value="twenty-four-hr-format" />
+      </choices>
+      <default>"twenty-four-hr-format"</default>
+    </key>
+    <key name="display-numeric-clock-bin" type="b">
+      <summary>Display numeric clock in binary clock UI</summary>
       <default>true</default>
+    </key>
+     <key name="numeric-clock-format-bin" type="s">
+      <choices>
+        <choice value="bin" />
+        <choice value="dec" />
+      </choices>
+      <default>"bin"</default>
     </key>
   </schema>
 </schemalist>

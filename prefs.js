@@ -6,54 +6,82 @@ function init(metaData) {
   ExtUtils.initTranslations();
 }
 
-function buildPrefsWidget() {
+function fillPreferencesWindow(window) {
+  const me = ExtUtils.getCurrentExtension();
   const settings = ExtUtils.getSettings();
-  const prefsPage = new Adw.PreferencesPage({
-    name: "general",
-    title: _("General"),
+
+  const builder = new Gtk.Builder();
+  const prefsFile = me.dir.get_child("prefs.ui").get_path();
+  builder.add_from_file(prefsFile);
+
+  const page = builder.get_object("prefs_page");
+  window.add(page);
+
+  const clockType = settings.get_string("clock-type");
+  const binCheckBtn = builder.get_object("bin_check_btn");
+  const bcdCheckBtn = builder.get_object("bcd_check_btn");
+
+  binCheckBtn.active = clockType === "bin";
+  bcdCheckBtn.active = clockType === "bcd";
+
+  binCheckBtn.connect("notify::active", () => {
+    if (binCheckBtn.active) {
+      settings.set_string("clock-type", "bin");
+    } else {
+      settings.set_string("clock-type", "bcd");
+    }
   });
 
-  const prefsGroup = new Adw.PreferencesGroup({
-    title: _("Preferences"),
-  });
-  prefsPage.add(prefsGroup);
-
-  const timeFormatSwitch = new Gtk.Switch({
-    valign: Gtk.Align.CENTER,
-  });
-
-  const timeFormatRow = new Adw.ActionRow({
-    title: _("Use 24-hour format"),
-    activatable_widget: timeFormatSwitch,
-  });
-
+  const bcdDisplayNumericClock = builder.get_object(
+    "bcd_display_numeric_clock",
+  );
   settings.bind(
-    "twenty-four-hour-format",
-    timeFormatSwitch,
+    "display-numeric-clock-bcd",
+    bcdDisplayNumericClock,
     "active",
-    Gio.SettingsBindFlags.BIND_DEFAULT,
+    Gio.SettingsBindFlags.DEFAULT,
   );
 
-  timeFormatRow.add_suffix(timeFormatSwitch);
-  prefsGroup.add(timeFormatRow);
-
-  const displayClockSwitch = new Gtk.Switch({
-    valign: Gtk.Align.CENTER,
-  });
-
-  settings.bind(
-    "display-clock",
-    displayClockSwitch,
-    "active",
-    Gio.SettingsBindFlags.BIND_DEFAULT,
+  const numericClockFormatBcd = settings.get_string("numeric-clock-format-bcd");
+  const twelveHrClockCheckBtn = builder.get_object("twelve_hr_clock_btn");
+  const twentyFourHrClockCheckBtn = builder.get_object(
+    "twenty_four_hr_clock_btn",
   );
 
-  const displayTimeRow = new Adw.ActionRow({
-    title: _("Show decimal clock"),
-    activatable_widget: displayClockSwitch,
-  });
-  displayTimeRow.add_suffix(displayClockSwitch);
-  prefsGroup.add(displayTimeRow);
+  twelveHrClockCheckBtn.active = numericClockFormatBcd === "twelve-hr-format";
+  twentyFourHrClockCheckBtn.active =
+    numericClockFormatBcd === "twenty-four-hr-format";
 
-  return prefsPage;
+  twelveHrClockCheckBtn.connect("notify::active", () => {
+    if (twelveHrClockCheckBtn.active) {
+      settings.set_string("numeric-clock-format-bcd", "twelve-hr-format");
+    } else {
+      settings.set_string("numeric-clock-format-bcd", "twenty-four-hr-format");
+    }
+  });
+
+  const binDisplayNumericClock = builder.get_object(
+    "bin_display_numeric_clock",
+  );
+  settings.bind(
+    "display-numeric-clock-bin",
+    binDisplayNumericClock,
+    "active",
+    Gio.SettingsBindFlags.DEFAULT,
+  );
+
+  const numericClockFormatBin = settings.get_string("numeric-clock-format-bin");
+  const binNumericClockBtn = builder.get_object("bin_numeric_clock_btn");
+  const decNumericClockBtn = builder.get_object("dec_numeric_clock_btn");
+
+  binNumericClockBtn.active = numericClockFormatBin === "bin";
+  decNumericClockBtn.active = numericClockFormatBin === "dec";
+
+  binNumericClockBtn.connect("notify::active", () => {
+    if (binNumericClockBtn.active) {
+      settings.set_string("numeric-clock-format-bin", "bin");
+    } else {
+      settings.set_string("numeric-clock-format-bin", "dec");
+    }
+  });
 }
