@@ -1,7 +1,7 @@
 const { St, Clutter, GLib } = imports.gi;
 
 const ExtUtils = imports.misc.extensionUtils;
-const { gettext: _, ngettext, pgettext } = ExtUtils;
+const { gettext: _ } = ExtUtils;
 
 const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
@@ -100,17 +100,21 @@ class Extension {
 
       if (CLOCK_TYPE === "bcd" && isOpen) {
         this.bcdClockHandler();
-        this.timerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1000, () => {
-          this.bcdClockHandler();
-          return GLib.SOURCE_CONTINUE;
-        });
+        this._setIntervalId = GLib.timeout_add(
+          GLib.PRIORITY_DEFAULT,
+          1000,
+          () => {
+            this.bcdClockHandler();
+            return GLib.SOURCE_CONTINUE;
+          },
+        );
         return;
       }
 
       if (CLOCK_TYPE === "bcd" && !isOpen) {
-        if (this.timerId) {
-          GLib.Source.remove(this.timerId);
-          this.timerId = null;
+        if (this._setIntervalId) {
+          GLib.Source.remove(this._setIntervalId);
+          this._setIntervalId = null;
         }
       }
     });
@@ -122,9 +126,9 @@ class Extension {
       this._timeOutId = null;
     }
 
-    if (this.timerId) {
-      GLib.Source.remove(this.timerId);
-      this.timerId = null;
+    if (this._setIntervalId) {
+      GLib.Source.remove(this._setIntervalId);
+      this._setIntervalId = null;
     }
 
     const clockType = this.settings.get_string("clock-type");
@@ -200,7 +204,7 @@ class Extension {
   };
 
   createBCDclock() {
-    this.timerId = null;
+    this._setIntervalId = null;
 
     this.bcdClock = new St.BoxLayout({
       vertical: false,
@@ -257,9 +261,9 @@ class Extension {
   };
 
   disable() {
-    if (this.timerId) {
-      GLib.Source.remove(this.timerId);
-      this.timerId = null;
+    if (this._setIntervalId) {
+      GLib.Source.remove(this._setIntervalId);
+      this._setIntervalId = null;
     }
 
     if (this.hourBox) {
