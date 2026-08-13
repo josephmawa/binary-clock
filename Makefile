@@ -22,7 +22,9 @@ clean:
 	rm -f *.zip
 
 build: clean
-	gnome-extensions pack ./ --extra-source=bcd.js --extra-source=prefs.ui
+	gnome-extensions pack ./ --extra-source=bcd.js \
+	--extra-source=prefs.ui \
+	--extra-source=emoji-recent-symbolic.svg
 
 local: build
 	gnome-extensions install -f *.zip

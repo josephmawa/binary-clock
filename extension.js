@@ -1,4 +1,4 @@
-const { St, Clutter, GLib } = imports.gi;
+const { St, Clutter, GLib, Gio } = imports.gi;
 
 const ExtUtils = imports.misc.extensionUtils;
 const { gettext: _ } = ExtUtils;
@@ -28,10 +28,15 @@ class Extension {
   enable() {
     // Panel menu button
     this.panelBtn = new PanelMenu.Button(0.0, Me.metadata.name, false);
+
+    const iconFile = Me.dir.get_child("emoji-recent-symbolic.svg");
+    const gicon = new Gio.FileIcon({ file: iconFile });
     const icon = new St.Icon({
-      icon_name: "emoji-recent-symbolic",
+      gicon: gicon,
       style_class: "system-status-icon",
+      icon_size: 16,
     });
+
     this.panelBtn.add_child(icon);
     Main.panel.addToStatusArea(Me.metadata.uuid, this.panelBtn, 0);
 
