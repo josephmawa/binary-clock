@@ -92,13 +92,13 @@ class Extension {
   }
 
   createUI() {
-    if (this._timeOutId) {
-      clearTimeout(this._timeOutId);
-      this._timeOutId = null;
+    if (this._setTimeOutId) {
+      clearTimeout(this._setTimeOutId);
+      this._setTimeOutId = null;
     }
 
     if (this._setIntervalId) {
-      GLib.Source.remove(this._setIntervalId);
+      clearInterval(this._setIntervalId);
       this._setIntervalId = null;
     }
 
@@ -113,7 +113,7 @@ class Extension {
   }
 
   createBinClock() {
-    this._timeOutId = null;
+    this._setTimeOutId = null;
     this._binaryClock = new BCDModule.BinaryClock();
   }
 
@@ -185,27 +185,20 @@ class Extension {
     }
 
     if (CLOCK_TYPE === "bin" && !isOpen) {
-      clearTimeout(this._timeOutId);
-      this._timeOutId = null;
+      clearTimeout(this._setTimeOutId);
+      this._setTimeOutId = null;
       return;
     }
 
     if (CLOCK_TYPE === "bcd" && isOpen) {
       this.bcdClockHandler();
-      this._setIntervalId = GLib.timeout_add(
-        GLib.PRIORITY_DEFAULT,
-        1000,
-        () => {
-          this.bcdClockHandler();
-          return GLib.SOURCE_CONTINUE;
-        },
-      );
+      this._setIntervalId = setInterval(this.bcdClockHandler, 1000);
       return;
     }
 
     if (CLOCK_TYPE === "bcd" && !isOpen) {
       if (this._setIntervalId) {
-        GLib.Source.remove(this._setIntervalId);
+        clearInterval(this._setIntervalId);
         this._setIntervalId = null;
       }
     }
@@ -265,7 +258,7 @@ class Extension {
     }
 
     const msLeft = DURATION - (msElapsed % DURATION);
-    this._timeOutId = setTimeout(this.binaryClockHandler, msLeft);
+    this._setTimeOutId = setTimeout(this.binaryClockHandler, msLeft);
   };
 
   disable() {
@@ -275,13 +268,13 @@ class Extension {
     }
 
     if (this._setIntervalId) {
-      GLib.Source.remove(this._setIntervalId);
+      clearInterval(this._setIntervalId);
       this._setIntervalId = null;
     }
 
-    if (this._timeOutId) {
-      clearTimeout(this._timeOutId);
-      this._timeOutId = null;
+    if (this._setTimeOutId) {
+      clearTimeout(this._setTimeOutId);
+      this._setTimeOutId = null;
     }
 
     if (this._hourBox) {
@@ -316,6 +309,11 @@ class Extension {
     if (this._binaryClock) {
       this._binaryClock.destroy();
       this._binaryClock = null;
+    }
+
+    if (this._binWrapper) {
+      this._binWrapper.destroy();
+      this._binWrapper = null;
     }
   }
 }
