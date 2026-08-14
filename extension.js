@@ -27,7 +27,7 @@ class Extension {
 
   enable() {
     // Panel menu button
-    this.panelBtn = new PanelMenu.Button(0.0, Me.metadata.name, false);
+    this._panelBtn = new PanelMenu.Button(0.0, Me.metadata.name, false);
 
     const iconFile = Me.dir.get_child("emoji-recent-symbolic.svg");
     const gicon = new Gio.FileIcon({ file: iconFile });
@@ -37,12 +37,12 @@ class Extension {
       icon_size: 16,
     });
 
-    this.panelBtn.add_child(icon);
-    Main.panel.addToStatusArea(Me.metadata.uuid, this.panelBtn, 0);
+    this._panelBtn.add_child(icon);
+    Main.panel.addToStatusArea(Me.metadata.uuid, this._panelBtn, 0);
 
     // Binary Clock UI
     const section = new PopupMenu.PopupMenuSection();
-    this.panelBtn.menu.addMenuItem(section);
+    this._panelBtn.menu.addMenuItem(section);
 
     const parentBox = new St.BoxLayout({
       vertical: false,
@@ -57,7 +57,7 @@ class Extension {
 
     // Section separator
     const separator = new PopupMenu.PopupSeparatorMenuItem();
-    this.panelBtn.menu.addMenuItem(separator);
+    this._panelBtn.menu.addMenuItem(separator);
 
     // Preferences section
     const prefsSection = new PopupMenu.PopupMenuSection();
@@ -77,7 +77,7 @@ class Extension {
     prefsBox.add_child(prefsItem);
 
     prefsSection.actor.add_child(prefsBox);
-    this.panelBtn.menu.addMenuItem(prefsSection);
+    this._panelBtn.menu.addMenuItem(prefsSection);
 
     // Bind settings
     this.bindSettings();
@@ -87,42 +87,10 @@ class Extension {
     // Call this method after creating Binary and BCD clocks
     this.createUI();
 
-    this.panelBtn.menu.connect("open-state-changed", (panelBtn, isOpen) => {
-      if (isOpen) {
-        this.createUI();
-      }
-
-      if (CLOCK_TYPE === "bin" && isOpen) {
-        this.binaryClockHandler();
-        return;
-      }
-
-      if (CLOCK_TYPE === "bin" && !isOpen) {
-        clearTimeout(this._timeOutId);
-        this._timeOutId = null;
-        return;
-      }
-
-      if (CLOCK_TYPE === "bcd" && isOpen) {
-        this.bcdClockHandler();
-        this._setIntervalId = GLib.timeout_add(
-          GLib.PRIORITY_DEFAULT,
-          1000,
-          () => {
-            this.bcdClockHandler();
-            return GLib.SOURCE_CONTINUE;
-          },
-        );
-        return;
-      }
-
-      if (CLOCK_TYPE === "bcd" && !isOpen) {
-        if (this._setIntervalId) {
-          GLib.Source.remove(this._setIntervalId);
-          this._setIntervalId = null;
-        }
-      }
-    });
+    this._openStateChangedHandlerId = this._panelBtn.menu.connect(
+      "open-state-changed",
+      this.openStateChangedHandler,
+    );
   }
 
   createUI() {
@@ -136,9 +104,9 @@ class Extension {
       this._setIntervalId = null;
     }
 
-    const clockType = this.settings.get_string("clock-type");
+    const clockType = this._settings.get_string("clock-type");
     if (clockType === "bcd") {
-      this._binWrapper.set_child(this.bcdClock);
+      this._binWrapper.set_child(this._bcdClock);
     } else if (clockType === "bin") {
       this._binWrapper.set_child(this._binaryClock);
     } else {
@@ -152,66 +120,103 @@ class Extension {
   }
 
   bindSettings() {
-    this.settings = ExtUtils.getSettings();
+    this._settings = ExtUtils.getSettings();
 
     this.clockTypeHandler();
-    this.settings.connect("changed::clock-type", () => {
+    this._settings.connect("changed::clock-type", () => {
       this.clockTypeHandler();
     });
 
     this.displayNumericClockBcdHandler();
-    this.settings.connect("changed::display-numeric-clock-bcd", () => {
+    this._settings.connect("changed::display-numeric-clock-bcd", () => {
       this.displayNumericClockBcdHandler();
     });
 
     this.numericClockFormatBcdHandler();
-    this.settings.connect("changed::numeric-clock-format-bcd", () => {
+    this._settings.connect("changed::numeric-clock-format-bcd", () => {
       this.numericClockFormatBcdHandler();
     });
 
     this.displayNumericClockBin();
-    this.settings.connect("changed::display-numeric-clock-bin", () => {
+    this._settings.connect("changed::display-numeric-clock-bin", () => {
       this.displayNumericClockBin();
     });
 
     this.numericClockFormatBinHandler();
-    this.settings.connect("changed::numeric-clock-format-bin", () => {
+    this._settings.connect("changed::numeric-clock-format-bin", () => {
       this.numericClockFormatBinHandler();
     });
   }
 
   clockTypeHandler = () => {
-    CLOCK_TYPE = this.settings.get_string("clock-type");
+    CLOCK_TYPE = this._settings.get_string("clock-type");
   };
 
   displayNumericClockBcdHandler = () => {
-    DISPLAY_NUMERIC_CLOCK_BCD = this.settings.get_boolean(
+    DISPLAY_NUMERIC_CLOCK_BCD = this._settings.get_boolean(
       "display-numeric-clock-bcd",
     );
   };
 
   numericClockFormatBcdHandler = () => {
-    NUMERIC_CLOCK_FORMAT_BCD = this.settings.get_string(
+    NUMERIC_CLOCK_FORMAT_BCD = this._settings.get_string(
       "numeric-clock-format-bcd",
     );
   };
 
   displayNumericClockBin = () => {
-    DISPLAY_NUMERIC_CLOCK_BIN = this.settings.get_boolean(
+    DISPLAY_NUMERIC_CLOCK_BIN = this._settings.get_boolean(
       "display-numeric-clock-bin",
     );
   };
 
   numericClockFormatBinHandler = () => {
-    NUMERIC_CLOCK_FORMAT_BIN = this.settings.get_string(
+    NUMERIC_CLOCK_FORMAT_BIN = this._settings.get_string(
       "numeric-clock-format-bin",
     );
+  };
+
+  openStateChangedHandler = (_panelBtn, isOpen) => {
+    if (isOpen) {
+      this.createUI();
+    }
+
+    if (CLOCK_TYPE === "bin" && isOpen) {
+      this.binaryClockHandler();
+      return;
+    }
+
+    if (CLOCK_TYPE === "bin" && !isOpen) {
+      clearTimeout(this._timeOutId);
+      this._timeOutId = null;
+      return;
+    }
+
+    if (CLOCK_TYPE === "bcd" && isOpen) {
+      this.bcdClockHandler();
+      this._setIntervalId = GLib.timeout_add(
+        GLib.PRIORITY_DEFAULT,
+        1000,
+        () => {
+          this.bcdClockHandler();
+          return GLib.SOURCE_CONTINUE;
+        },
+      );
+      return;
+    }
+
+    if (CLOCK_TYPE === "bcd" && !isOpen) {
+      if (this._setIntervalId) {
+        GLib.Source.remove(this._setIntervalId);
+        this._setIntervalId = null;
+      }
+    }
   };
 
   createBCDclock() {
     this._setIntervalId = null;
 
-    this.bcdClock = new St.BoxLayout({
+    this._bcdClock = new St.BoxLayout({
       vertical: false,
       style: "spacing: 10px;",
       style_class: "main-box",
@@ -219,13 +224,13 @@ class Extension {
       y_align: Clutter.ActorAlign.CENTER,
     });
 
-    this.hourBox = new BCDModule.Hour({ hour: 0 });
-    this.minuteBox = new BCDModule.MinutesOrSeconds({ value: 0 });
-    this.secondBox = new BCDModule.MinutesOrSeconds({ value: 0 });
+    this._hourBox = new BCDModule.Hour({ hour: 0 });
+    this._minuteBox = new BCDModule.MinutesOrSeconds({ value: 0 });
+    this._secondBox = new BCDModule.MinutesOrSeconds({ value: 0 });
 
-    this.bcdClock.add_child(this.hourBox);
-    this.bcdClock.add_child(this.minuteBox);
-    this.bcdClock.add_child(this.secondBox);
+    this._bcdClock.add_child(this._hourBox);
+    this._bcdClock.add_child(this._minuteBox);
+    this._bcdClock.add_child(this._secondBox);
   }
 
   bcdClockHandler = () => {
@@ -235,9 +240,9 @@ class Extension {
       hours = hours - 12;
     }
 
-    this.hourBox.setHour(hours);
-    this.minuteBox.setValue(date.getMinutes());
-    this.secondBox.setValue(date.getSeconds());
+    this._hourBox.setHour(hours);
+    this._minuteBox.setValue(date.getMinutes());
+    this._secondBox.setValue(date.getSeconds());
   };
 
   binaryClockHandler = () => {
@@ -266,29 +271,53 @@ class Extension {
   };
 
   disable() {
+    if (this._openStateChangedHandlerId) {
+      this._panelBtn.disconnect(this._openStateChangedHandlerId);
+      this._openStateChangedHandlerId = null;
+    }
+
     if (this._setIntervalId) {
       GLib.Source.remove(this._setIntervalId);
       this._setIntervalId = null;
     }
 
-    if (this.hourBox) {
-      this.hourBox.destroy();
-      this.hourBox = null;
+    if (this._timeOutId) {
+      clearTimeout(this._timeOutId);
+      this._timeOutId = null;
     }
 
-    if (this.minuteBox) {
-      this.minuteBox.destroy();
-      this.minuteBox = null;
+    if (this._hourBox) {
+      this._hourBox.destroy();
+      this._hourBox = null;
     }
 
-    if (this.secondBox) {
-      this.secondBox.destroy();
-      this.secondBox = null;
+    if (this._minuteBox) {
+      this._minuteBox.destroy();
+      this._minuteBox = null;
     }
 
-    if (this.panelBtn) {
-      this.panelBtn.destroy();
-      this.panelBtn = null;
+    if (this._secondBox) {
+      this._secondBox.destroy();
+      this._secondBox = null;
+    }
+
+    if (this._panelBtn) {
+      this._panelBtn.destroy();
+      this._panelBtn = null;
+    }
+
+    if (this._bcdClock) {
+      this._bcdClock.destroy();
+      this._bcdClock = null;
+    }
+
+    if (this._settings) {
+      this._settings = null;
+    }
+
+    if (this._binaryClock) {
+      this._binaryClock.destroy();
+      this._binaryClock = null;
     }
   }
 }
