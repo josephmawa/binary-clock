@@ -79,9 +79,7 @@ class Extension {
     prefsSection.actor.add_child(prefsBox);
     this._panelBtn.menu.addMenuItem(prefsSection);
 
-    // Bind settings
     this.bindSettings();
-    // Creates UIs which are added to the dropdown as settings change
     this.createBinClock();
     this.createBCDclock();
     // Call this method after creating Binary and BCD clocks
