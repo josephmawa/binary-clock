@@ -12,8 +12,8 @@ const BCDModule = Me.imports.bcd;
 
 let CLOCK_TYPE = null;
 let DISPLAY_NUMERIC_CLOCK_BCD = null;
-let NUMERIC_CLOCK_FORMAT_BCD = null;
 let DISPLAY_NUMERIC_CLOCK_BIN = null;
+let NUMERIC_CLOCK_FORMAT_BCD = null;
 let NUMERIC_CLOCK_FORMAT_BIN = null;
 
 const SEC_MS = 1000;
@@ -314,6 +314,26 @@ class Extension {
     if (this._binWrapper) {
       this._binWrapper.destroy();
       this._binWrapper = null;
+    }
+
+    if (CLOCK_TYPE) {
+      CLOCK_TYPE = null;
+    }
+
+    if (DISPLAY_NUMERIC_CLOCK_BCD) {
+      DISPLAY_NUMERIC_CLOCK_BCD = null;
+    }
+
+    if (DISPLAY_NUMERIC_CLOCK_BIN) {
+      DISPLAY_NUMERIC_CLOCK_BIN = null;
+    }
+
+    if (NUMERIC_CLOCK_FORMAT_BCD) {
+      NUMERIC_CLOCK_FORMAT_BCD = null;
+    }
+
+    if (NUMERIC_CLOCK_FORMAT_BIN) {
+      NUMERIC_CLOCK_FORMAT_BIN = null;
     }
   }
 }
