@@ -121,29 +121,39 @@ class Extension {
     this._settings = ExtUtils.getSettings();
 
     this.clockTypeHandler();
-    this._settings.connect("changed::clock-type", () => {
-      this.clockTypeHandler();
-    });
+    this._settings.connectObject(
+      "changed::clock-type",
+      () => this.clockTypeHandler(),
+      this,
+    );
 
     this.displayNumericClockBcdHandler();
-    this._settings.connect("changed::display-numeric-clock-bcd", () => {
-      this.displayNumericClockBcdHandler();
-    });
+    this._settings.connectObject(
+      "changed::display-numeric-clock-bcd",
+      () => this.displayNumericClockBcdHandler(),
+      this,
+    );
 
     this.numericClockFormatBcdHandler();
-    this._settings.connect("changed::numeric-clock-format-bcd", () => {
-      this.numericClockFormatBcdHandler();
-    });
+    this._settings.connectObject(
+      "changed::numeric-clock-format-bcd",
+      () => this.numericClockFormatBcdHandler(),
+      this,
+    );
 
     this.displayNumericClockBin();
-    this._settings.connect("changed::display-numeric-clock-bin", () => {
-      this.displayNumericClockBin();
-    });
+    this._settings.connectObject(
+      "changed::display-numeric-clock-bin",
+      () => this.displayNumericClockBin(),
+      this,
+    );
 
     this.numericClockFormatBinHandler();
-    this._settings.connect("changed::numeric-clock-format-bin", () => {
-      this.numericClockFormatBinHandler();
-    });
+    this._settings.connectObject(
+      "changed::numeric-clock-format-bin",
+      () => this.numericClockFormatBinHandler(),
+      this,
+    );
   }
 
   clockTypeHandler = () => {
@@ -267,6 +277,11 @@ class Extension {
       this._openStateChangedHandlerId = null;
     }
 
+    if (this._settings) {
+      this._settings.disconnectObject(this);
+      this._settings = null;
+    }
+
     if (this._setIntervalId) {
       clearInterval(this._setIntervalId);
       this._setIntervalId = null;
@@ -300,10 +315,6 @@ class Extension {
     if (this._bcdClock) {
       this._bcdClock.destroy();
       this._bcdClock = null;
-    }
-
-    if (this._settings) {
-      this._settings = null;
     }
 
     if (this._binaryClock) {
