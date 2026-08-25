@@ -102,10 +102,9 @@ class Extension {
       this._setIntervalId = null;
     }
 
-    const clockType = this._settings.get_string("clock-type");
-    if (clockType === "bcd") {
+    if (CLOCK_TYPE === "bcd") {
       this._binWrapper.set_child(this._bcdClock);
-    } else if (clockType === "bin") {
+    } else if (CLOCK_TYPE === "bin") {
       this._binWrapper.set_child(this._binaryClock);
     } else {
       throw new Error("Unknown clock-type string setting");
