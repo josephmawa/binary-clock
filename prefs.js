@@ -1,6 +1,6 @@
-const { Adw, Gtk, Gio } = imports.gi;
+const { Gtk, Gio } = imports.gi;
 const ExtUtils = imports.misc.extensionUtils;
-const { gettext: _, ngettext, pgettext } = ExtUtils;
+const { gettext: _ } = ExtUtils;
 
 function init(metaData) {
   ExtUtils.initTranslations();
