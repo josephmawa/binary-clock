@@ -43,18 +43,28 @@ const BitWidget = GObject.registerClass(
       this.index = params.index;
 
       this.add_style_class_name("bit");
-
-      this.connect("notify::bit", () => {
-        const styleClassName = this.get_style_class_name();
-        if (this.bit === "1" && !styleClassName.includes("bit-blue-bg")) {
-          this.add_style_class_name("bit-blue-bg");
-        }
-
-        if (this.bit === "0" && styleClassName.includes("bit-blue-bg")) {
-          this.remove_style_class_name("bit-blue-bg");
-        }
-      });
+      /**
+       * This handler is disconnected immediately
+       * the target/bound object, in this case this,
+       * is destroyed.
+       */
+      this.connectObject(
+        "notify::bit",
+        () => this.updateStyleClassName(),
+        this,
+      );
     }
+
+    updateStyleClassName = () => {
+      const styleClassName = this.get_style_class_name();
+      if (this.bit === "1" && !styleClassName.includes("bit-blue-bg")) {
+        this.add_style_class_name("bit-blue-bg");
+      }
+
+      if (this.bit === "0" && styleClassName.includes("bit-blue-bg")) {
+        this.remove_style_class_name("bit-blue-bg");
+      }
+    };
   },
 );
 
@@ -131,13 +141,22 @@ const Column = GObject.registerClass(
         style_class: "time-unit-wrapper",
       });
 
-      this._timeUnitWrapper.connect("notify::visible", () => {
-        if (this._timeUnitWrapper.visible) {
-          this.bindTimeUnit();
-        } else {
-          this.unbindTimeUnit();
-        }
-      });
+      /**
+       * This handler is disconnected immediately
+       * the target/bound object, in this case this,
+       * is destroyed.
+       */
+      this._timeUnitWrapper.connectObject(
+        "notify::visible",
+        () => {
+          if (this._timeUnitWrapper.visible) {
+            this.bindTimeUnit();
+          } else {
+            this.unbindTimeUnit();
+          }
+        },
+        this,
+      );
 
       this.add_child(this._timeUnitWrapper);
 
