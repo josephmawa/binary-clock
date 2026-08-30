@@ -292,16 +292,19 @@ class Extension {
     }
 
     if (this._hourBox) {
+      this._hourBox.unbindAndDisconnect();
       this._hourBox.destroy();
       this._hourBox = null;
     }
 
     if (this._minuteBox) {
+      this._minuteBox.unbindAndDisconnect();
       this._minuteBox.destroy();
       this._minuteBox = null;
     }
 
     if (this._secondBox) {
+      this._secondBox.unbindAndDisconnect();
       this._secondBox.destroy();
       this._secondBox = null;
     }

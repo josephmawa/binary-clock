@@ -110,13 +110,14 @@ const Column = GObject.registerClass(
       this.time_unit = `${this.num}`;
       this.bits = this.num.toString(2).padStart(this.len, "0");
 
+      this._bitWidgetBindingRefs = [];
       for (let i = 0; i < this.bits.length; i++) {
         const bitWidget = new BitWidget({
           index: i,
           bit: this.bits[i],
         });
 
-        this.bind_property_full(
+        const binding = this.bind_property_full(
           "bits",
           bitWidget,
           "bit",
@@ -127,6 +128,7 @@ const Column = GObject.registerClass(
           null,
         );
 
+        this._bitWidgetBindingRefs.push(binding);
         this.add_child(bitWidget);
       }
 
@@ -142,9 +144,14 @@ const Column = GObject.registerClass(
       });
 
       /**
+       * This connection is necessary in case the user
+       * toggles the visibility of the time unit wrapper
+       * on and off from settings.
+       *
        * This handler is disconnected immediately
        * the target/bound object, in this case when this
        * is destroyed.
+       *
        */
       this._timeUnitWrapper.connectObject(
         "notify::visible",
@@ -195,6 +202,18 @@ const Column = GObject.registerClass(
       }
     }
 
+    unbindAndDisconnect() {
+      this.unbindTimeUnit();
+
+      for (const binding of this._bitWidgetBindingRefs) {
+        binding.unbind();
+      }
+      this._bitWidgetBindingRefs = [];
+
+      this._timeUnitWrapper.disconnectObject(this);
+      Gio.Settings.unbind(this._timeUnitWrapper, "visible");
+    }
+
     setBits(num = 0) {
       if (num == this.num) return;
       this.num = num;
@@ -242,6 +261,11 @@ var Hour = GObject.registerClass(
       this.col1.setBits(+this.hour[0]);
       this.col2.setBits(+this.hour[1]);
     }
+
+    unbindAndDisconnect() {
+      this.col1.unbindAndDisconnect();
+      this.col2.unbindAndDisconnect();
+    }
   },
 );
 
@@ -285,6 +309,11 @@ var MinutesOrSeconds = GObject.registerClass(
 
       this.col1.setBits(+this.value[0]);
       this.col2.setBits(+this.value[1]);
+    }
+
+    unbindAndDisconnect() {
+      this.col1.unbindAndDisconnect();
+      this.col2.unbindAndDisconnect();
     }
   },
 );
