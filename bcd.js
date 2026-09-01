@@ -43,18 +43,28 @@ const BitWidget = GObject.registerClass(
       this.index = params.index;
 
       this.add_style_class_name("bit");
-
-      this.connect("notify::bit", () => {
-        const styleClassName = this.get_style_class_name();
-        if (this.bit === "1" && !styleClassName.includes("bit-blue-bg")) {
-          this.add_style_class_name("bit-blue-bg");
-        }
-
-        if (this.bit === "0" && styleClassName.includes("bit-blue-bg")) {
-          this.remove_style_class_name("bit-blue-bg");
-        }
-      });
+      /**
+       * This handler is disconnected immediately
+       * the target/bound object(in this case `this`)
+       * is destroyed.
+       */
+      this.connectObject(
+        "notify::bit",
+        () => this.updateStyleClassName(),
+        this,
+      );
     }
+
+    updateStyleClassName = () => {
+      const styleClassName = this.get_style_class_name();
+      if (this.bit === "1" && !styleClassName.includes("bit-blue-bg")) {
+        this.add_style_class_name("bit-blue-bg");
+      }
+
+      if (this.bit === "0" && styleClassName.includes("bit-blue-bg")) {
+        this.remove_style_class_name("bit-blue-bg");
+      }
+    };
   },
 );
 
@@ -100,13 +110,14 @@ const Column = GObject.registerClass(
       this.time_unit = `${this.num}`;
       this.bits = this.num.toString(2).padStart(this.len, "0");
 
+      this._bitWidgetBindingRefs = [];
       for (let i = 0; i < this.bits.length; i++) {
         const bitWidget = new BitWidget({
           index: i,
           bit: this.bits[i],
         });
 
-        this.bind_property_full(
+        const binding = this.bind_property_full(
           "bits",
           bitWidget,
           "bit",
@@ -117,6 +128,7 @@ const Column = GObject.registerClass(
           null,
         );
 
+        this._bitWidgetBindingRefs.push(binding);
         this.add_child(bitWidget);
       }
 
@@ -131,13 +143,27 @@ const Column = GObject.registerClass(
         style_class: "time-unit-wrapper",
       });
 
-      this._timeUnitWrapper.connect("notify::visible", () => {
-        if (this._timeUnitWrapper.visible) {
-          this.bindTimeUnit();
-        } else {
-          this.unbindTimeUnit();
-        }
-      });
+      /**
+       * This connection is necessary in case the user
+       * toggles the visibility of the time unit wrapper
+       * on and off from settings.
+       *
+       * This handler is disconnected immediately
+       * the target/bound object(in this case `this`)
+       * is destroyed.
+       *
+       */
+      this._timeUnitWrapper.connectObject(
+        "notify::visible",
+        () => {
+          if (this._timeUnitWrapper.visible) {
+            this.bindTimeUnit();
+          } else {
+            this.unbindTimeUnit();
+          }
+        },
+        this,
+      );
 
       this.add_child(this._timeUnitWrapper);
 
@@ -174,6 +200,18 @@ const Column = GObject.registerClass(
         this._timeUnitBinding.unbind();
         this._timeUnitBinding = null;
       }
+    }
+
+    unbindAndDisconnect() {
+      this.unbindTimeUnit();
+
+      for (const binding of this._bitWidgetBindingRefs) {
+        binding.unbind();
+      }
+      this._bitWidgetBindingRefs = [];
+
+      this._timeUnitWrapper.disconnectObject(this);
+      Gio.Settings.unbind(this._timeUnitWrapper, "visible");
     }
 
     setBits(num = 0) {
@@ -223,6 +261,11 @@ var Hour = GObject.registerClass(
       this.col1.setBits(+this.hour[0]);
       this.col2.setBits(+this.hour[1]);
     }
+
+    unbindAndDisconnect() {
+      this.col1.unbindAndDisconnect();
+      this.col2.unbindAndDisconnect();
+    }
   },
 );
 
@@ -267,6 +310,11 @@ var MinutesOrSeconds = GObject.registerClass(
       this.col1.setBits(+this.value[0]);
       this.col2.setBits(+this.value[1]);
     }
+
+    unbindAndDisconnect() {
+      this.col1.unbindAndDisconnect();
+      this.col2.unbindAndDisconnect();
+    }
   },
 );
 
@@ -302,13 +350,14 @@ const Binary = GObject.registerClass(
       this.layout_manager = gridLayout;
       const GRID_COLUMNS = 4;
 
+      this._bitWidgetBindingRefs = [];
       for (let i = 0; i < 16; i++) {
         const col = i % GRID_COLUMNS;
         const row = Math.floor(i / GRID_COLUMNS);
 
         const bitWidget = new BitWidget();
 
-        this.bind_property_full(
+        const binding = this.bind_property_full(
           "bin_time",
           bitWidget,
           "bit",
@@ -319,9 +368,17 @@ const Binary = GObject.registerClass(
           null,
         );
 
+        this._bitWidgetBindingRefs.push(binding);
         this.layout_manager.attach(bitWidget, col, row, 1, 1);
         this.add_child(bitWidget);
       }
+    }
+
+    unbindAndDisconnect() {
+      for (const binding of this._bitWidgetBindingRefs) {
+        binding.unbind();
+      }
+      this._bitWidgetBindingRefs = [];
     }
   },
 );
@@ -356,6 +413,11 @@ var BinaryClock = GObject.registerClass(
         "visible",
         Gio.SettingsBindFlags.BIND_DEFAULT,
       );
+    }
+
+    unbindAndDisconnect() {
+      this._binaryClock.unbindAndDisconnect();
+      Gio.Settings.unbind(this._binaryClockLabel, "visible");
     }
 
     setBinClock(binClock) {
