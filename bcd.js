@@ -45,7 +45,7 @@ const BitWidget = GObject.registerClass(
       this.add_style_class_name("bit");
       /**
        * This handler is disconnected immediately
-       * the target/bound object, in this case when this
+       * the target/bound object(in this case `this`)
        * is destroyed.
        */
       this.connectObject(
@@ -149,7 +149,7 @@ const Column = GObject.registerClass(
        * on and off from settings.
        *
        * This handler is disconnected immediately
-       * the target/bound object, in this case when this
+       * the target/bound object(in this case `this`)
        * is destroyed.
        *
        */
