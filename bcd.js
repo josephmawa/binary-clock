@@ -350,13 +350,14 @@ const Binary = GObject.registerClass(
       this.layout_manager = gridLayout;
       const GRID_COLUMNS = 4;
 
+      this._bitWidgetBindingRefs = [];
       for (let i = 0; i < 16; i++) {
         const col = i % GRID_COLUMNS;
         const row = Math.floor(i / GRID_COLUMNS);
 
         const bitWidget = new BitWidget();
 
-        this.bind_property_full(
+        const binding = this.bind_property_full(
           "bin_time",
           bitWidget,
           "bit",
@@ -367,9 +368,17 @@ const Binary = GObject.registerClass(
           null,
         );
 
+        this._bitWidgetBindingRefs.push(binding);
         this.layout_manager.attach(bitWidget, col, row, 1, 1);
         this.add_child(bitWidget);
       }
+    }
+
+    unbindAndDisconnect() {
+      for (const binding of this._bitWidgetBindingRefs) {
+        binding.unbind();
+      }
+      this._bitWidgetBindingRefs = [];
     }
   },
 );
@@ -404,6 +413,11 @@ var BinaryClock = GObject.registerClass(
         "visible",
         Gio.SettingsBindFlags.BIND_DEFAULT,
       );
+    }
+
+    unbindAndDisconnect() {
+      this._binaryClock.unbindAndDisconnect();
+      Gio.Settings.unbind(this._binaryClockLabel, "visible");
     }
 
     setBinClock(binClock) {

@@ -320,6 +320,7 @@ class Extension {
     }
 
     if (this._binaryClock) {
+      this._binaryClock.unbindAndDisconnect();
       this._binaryClock.destroy();
       this._binaryClock = null;
     }
