@@ -30,4 +30,4 @@ local: build
 	gnome-extensions install -f *.zip
 
 debug: local
-	dbus-run-session gnome-shell --nested --wayland
+	dbus-run-session gnome-shell --devkit --wayland

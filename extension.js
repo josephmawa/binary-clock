@@ -1,14 +1,16 @@
-const { St, Clutter, GLib, Gio } = imports.gi;
+import St from "gi://St";
+import Clutter from "gi://Clutter";
+import Gio from "gi://Gio";
 
-const ExtUtils = imports.misc.extensionUtils;
-const { gettext: _ } = ExtUtils;
+import {
+  Extension,
+  gettext as _,
+} from "resource:///org/gnome/shell/extensions/extension.js";
+import * as Main from "resource:///org/gnome/shell/ui/main.js";
+import * as PanelMenu from "resource:///org/gnome/shell/ui/panelMenu.js";
+import * as PopupMenu from "resource:///org/gnome/shell/ui/popupMenu.js";
 
-const Main = imports.ui.main;
-const PanelMenu = imports.ui.panelMenu;
-const PopupMenu = imports.ui.popupMenu;
-
-const Me = ExtUtils.getCurrentExtension();
-const BCDModule = Me.imports.bcd;
+import * as BCDModule from "./bcd.js";
 
 let CLOCK_TYPE = null;
 let DISPLAY_NUMERIC_CLOCK_BCD = null;
@@ -22,14 +24,17 @@ const HOUR_MS = 60 * MIN_MS;
 const DAY_MS = 24 * HOUR_MS;
 const DURATION = DAY_MS / 2 ** 16;
 
-class Extension {
-  constructor() {}
+export default class BinaryClock extends Extension {
+  constructor(metadata) {
+    super(metadata);
+    this.initTranslations();
+  }
 
-  enable() {
+  enable(metadata) {
     // Panel menu button
-    this._panelBtn = new PanelMenu.Button(0.0, Me.metadata.name, false);
+    this._panelBtn = new PanelMenu.Button(0.0, this.metadata.name, false);
 
-    const iconFile = Me.dir.get_child("emoji-recent-symbolic.svg");
+    const iconFile = this.dir.get_child("emoji-recent-symbolic.svg");
     const gicon = new Gio.FileIcon({ file: iconFile });
     const icon = new St.Icon({
       gicon: gicon,
@@ -38,7 +43,7 @@ class Extension {
     });
 
     this._panelBtn.add_child(icon);
-    Main.panel.addToStatusArea(Me.metadata.uuid, this._panelBtn, 0);
+    Main.panel.addToStatusArea(this.metadata.uuid, this._panelBtn, 0);
 
     // Binary Clock UI
     const section = new PopupMenu.PopupMenuSection();
@@ -66,7 +71,7 @@ class Extension {
       "preferences-system-symbolic",
     );
     prefsItem.connect("activate", () => {
-      ExtUtils.openPrefs();
+      this.openPreferences();
     });
     prefsItem.setOrnament(PopupMenu.Ornament.HIDDEN);
 
@@ -117,7 +122,7 @@ class Extension {
   }
 
   bindSettings() {
-    this._settings = ExtUtils.getSettings();
+    this._settings = this.getSettings();
 
     this.clockTypeHandler();
     this._settings.connectObject(
@@ -368,9 +373,4 @@ class Extension {
     NUMERIC_CLOCK_FORMAT_BCD = null;
     NUMERIC_CLOCK_FORMAT_BIN = null;
   }
-}
-
-function init() {
-  ExtUtils.initTranslations();
-  return new Extension();
 }
