@@ -1,5 +1,13 @@
-const { GObject, St, Clutter, Gio } = imports.gi;
-const ExtUtils = imports.misc.extensionUtils;
+import GObject from "gi://GObject";
+import St from "gi://St";
+import Clutter from "gi://Clutter";
+import Gio from "gi://Gio";
+
+import { Extension } from "resource:///org/gnome/shell/extensions/extension.js";
+
+function getSettings() {
+  return Extension.lookupByURL(import.meta.url).getSettings();
+}
 
 const BitWidget = GObject.registerClass(
   {
@@ -24,8 +32,8 @@ const BitWidget = GObject.registerClass(
     },
   },
   class BitWidget extends St.Widget {
-    _init(params = {}) {
-      super._init({
+    constructor(params = {}) {
+      super({
         x_expand: false,
         y_expand: false,
         can_focus: false,
@@ -89,8 +97,8 @@ const Column = GObject.registerClass(
     },
   },
   class Column extends St.BoxLayout {
-    _init(params = {}) {
-      super._init({
+    constructor(params = {}) {
+      super({
         vertical: true,
         style: "spacing: 5px;",
         y_align: Clutter.ActorAlign.END,
@@ -167,7 +175,7 @@ const Column = GObject.registerClass(
 
       this.add_child(this._timeUnitWrapper);
 
-      const settings = ExtUtils.getSettings();
+      const settings = getSettings();
       settings.bind(
         "display-numeric-clock-bcd",
         this._timeUnitWrapper,
@@ -223,13 +231,13 @@ const Column = GObject.registerClass(
   },
 );
 
-var Hour = GObject.registerClass(
+export const Hour = GObject.registerClass(
   {
     GTypeName: "Hour",
   },
   class Hour extends St.BoxLayout {
-    _init(params = {}) {
-      super._init({
+    constructor(params = {}) {
+      super({
         vertical: false,
         style: "spacing: 5px;",
         y_align: Clutter.ActorAlign.END,
@@ -269,13 +277,13 @@ var Hour = GObject.registerClass(
   },
 );
 
-var MinutesOrSeconds = GObject.registerClass(
+export const MinutesOrSeconds = GObject.registerClass(
   {
     GTypeName: "MinutesOrSeconds",
   },
   class MinutesOrSeconds extends St.BoxLayout {
-    _init(params = {}) {
-      super._init({
+    constructor(params = {}) {
+      super({
         vertical: false,
         style: "spacing: 5px;",
         y_align: Clutter.ActorAlign.END,
@@ -332,8 +340,8 @@ const Binary = GObject.registerClass(
     },
   },
   class Binary extends St.Widget {
-    _init(params = {}) {
-      super._init({
+    constructor(params = {}) {
+      super({
         x_expand: false,
         y_expand: true,
         x_align: Clutter.ActorAlign.CENTER,
@@ -383,13 +391,13 @@ const Binary = GObject.registerClass(
   },
 );
 
-var BinaryClock = GObject.registerClass(
+export const BinaryClock = GObject.registerClass(
   {
     GTypeName: "BinaryClock",
   },
   class BinaryClock extends St.BoxLayout {
-    _init(params = {}) {
-      super._init({
+    constructor(params = {}) {
+      super({
         vertical: true,
         style: "spacing: 5px;",
         x_expand: true,
@@ -406,7 +414,7 @@ var BinaryClock = GObject.registerClass(
       });
       this.add_child(this._binaryClockLabel);
 
-      const settings = ExtUtils.getSettings();
+      const settings = getSettings();
       settings.bind(
         "display-numeric-clock-bin",
         this._binaryClockLabel,
@@ -429,7 +437,7 @@ var BinaryClock = GObject.registerClass(
   },
 );
 
-var convertToBinClock = function (n) {
+export function convertToBinClock(n) {
   const bits = [];
   let num = n;
 
@@ -444,4 +452,4 @@ var convertToBinClock = function (n) {
   }
 
   return bits.join("").padEnd(16, "0");
-};
+}
