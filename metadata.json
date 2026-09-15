@@ -2,7 +2,7 @@
   "name": "Binary Clock",
   "description": "Displays the time in Binary or Binary-coded Decimal(BCD) format",
   "url": "https://github.com/josephmawa/binary-clock",
-  "uuid": "binary-clocka@josephmawa.github.io",
+  "uuid": "binary-clock@josephmawa.github.io",
   "settings-schema": "org.gnome.shell.extensions.binary-clock",
   "gettext-domain": "binary-clock",
   "shell-version": [
