@@ -96,6 +96,68 @@ export default class BinaryClock extends Extension {
     );
   }
 
+  disable() {
+    if (this._openStateChangedHandlerId) {
+      this._panelBtn.disconnect(this._openStateChangedHandlerId);
+      this._openStateChangedHandlerId = null;
+    }
+
+    if (this._settings) {
+      this._settings.disconnectObject(this);
+      this._settings = null;
+    }
+
+    if (this._setIntervalId) {
+      clearInterval(this._setIntervalId);
+      this._setIntervalId = null;
+    }
+
+    if (this._setTimeOutId) {
+      clearTimeout(this._setTimeOutId);
+      this._setTimeOutId = null;
+    }
+
+    /**
+     * We unbind property bindings and disconnect
+     * signal handlers.
+     */
+    this._hourBox?.unbindAndDisconnect?.();
+    this._minuteBox?.unbindAndDisconnect?.();
+    this._secondBox?.unbindAndDisconnect?.();
+    this._binaryClock?.unbindAndDisconnect?.();
+
+    this._hourBox?.destroy?.();
+    this._minuteBox?.destroy?.();
+    this._secondBox?.destroy?.();
+
+    this._bcdClock?.destroy?.();
+    this._binaryClock?.destroy?.();
+
+    this._binWrapper?.destroy?.();
+    this._panelBtn?.destroy?.();
+
+    /**
+     * Finally, set everything to null. Checking for null before
+     * setting to null seems a lot more work than simply setting
+     * to null.
+     */
+    this._hourBox = null;
+    this._minuteBox = null;
+    this._secondBox = null;
+
+    this._bcdClock = null;
+    this._binaryClock = null;
+
+    this._binWrapper = null;
+    this._panelBtn = null;
+
+    CLOCK_TYPE = null;
+    DISPLAY_NUMERIC_CLOCK_BCD = null;
+    DISPLAY_NUMERIC_CLOCK_BIN = null;
+    NUMERIC_CLOCK_FORMAT_BCD = null;
+    NUMERIC_CLOCK_FORMAT_BIN = null;
+  }
+
   createUI() {
     if (this._setTimeOutId) {
       clearTimeout(this._setTimeOutId);
@@ -274,103 +336,4 @@ export default class BinaryClock extends Extension {
     const msLeft = DURATION - (msElapsed % DURATION);
     this._setTimeOutId = setTimeout(this.binaryClockHandler, msLeft);
   };
-
-  disable() {
-    if (this._openStateChangedHandlerId) {
-      this._panelBtn.disconnect(this._openStateChangedHandlerId);
-      this._openStateChangedHandlerId = null;
-    }
-
-    if (this._settings) {
-      this._settings.disconnectObject(this);
-      this._settings = null;
-    }
-
-    if (this._setIntervalId) {
-      clearInterval(this._setIntervalId);
-      this._setIntervalId = null;
-    }
-
-    if (this._setTimeOutId) {
-      clearTimeout(this._setTimeOutId);
-      this._setTimeOutId = null;
-    }
-
-    /**
-     * We unbind property bindings and disconnect
-     * signal handlers. There is no need to destroy
-     * them because destroying the parent will
-     * eventually destroy them.
-     
-     * Besides, there is an error thrown when a
-     * parent calls destroy after its descendant
-     * calls destroy and vice-versa.
-     
-     * Therefore, we will call the unbindAndDisconnect
-     * methods and set the children to null after calling
-     * destroy on their common ancestor, this._panelBtn.
-     *
-     */
-
-    if (this._hourBox) {
-      this._hourBox.unbindAndDisconnect();
-    }
-
-    if (this._minuteBox) {
-      this._minuteBox.unbindAndDisconnect();
-    }
-
-    if (this._secondBox) {
-      this._secondBox.unbindAndDisconnect();
-    }
-
-    if (this._binaryClock) {
-      this._binaryClock.unbindAndDisconnect();
-    }
-
-    /**
-     * The menu dropdown holds only one clock at a time
-     * yet both BCD and Binary clock are created when the
-     * extension is enabled. Therefore, we can't count on
-     * the parent to destroy both clock UI elements we have
-     * created. It will only destroy that which is a child of
-     * this._binWrapper at the time of disabling the extension.
-     
-     * We need to manually destroy the other and set it to
-     * null(we will do it farther down).
-     *
-     */
-
-    if (CLOCK_TYPE === "bcd") {
-      this._binaryClock?.destroy();
-    } else {
-      this._bcdClock?.destroy();
-    }
-
-    if (this._panelBtn) {
-      this._panelBtn.destroy();
-    }
-
-    /**
-     * Finally, set everything to null. Checking for null before
-     * setting to null seems a lot more work than simply setting
-     * to null.
-     */
-
-    this._panelBtn = null;
-    this._binWrapper = null;
-
-    this._bcdClock = null;
-    this._binaryClock = null;
-
-    this._hourBox = null;
-    this._minuteBox = null;
-    this._secondBox = null;
-
-    CLOCK_TYPE = null;
-    DISPLAY_NUMERIC_CLOCK_BCD = null;
-    DISPLAY_NUMERIC_CLOCK_BIN = null;
-    NUMERIC_CLOCK_FORMAT_BCD = null;
-    NUMERIC_CLOCK_FORMAT_BIN = null;
-  }
 }
