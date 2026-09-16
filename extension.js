@@ -27,7 +27,6 @@ const DURATION = DAY_MS / 2 ** 16;
 export default class BinaryClock extends Extension {
   constructor(metadata) {
     super(metadata);
-    this.initTranslations();
   }
 
   enable(metadata) {
@@ -121,20 +120,20 @@ export default class BinaryClock extends Extension {
      * We unbind property bindings and disconnect
      * signal handlers.
      */
-    this._hourBox?.unbindAndDisconnect?.();
-    this._minuteBox?.unbindAndDisconnect?.();
-    this._secondBox?.unbindAndDisconnect?.();
-    this._binaryClock?.unbindAndDisconnect?.();
+    this._hourBox?.unbindAndDisconnect();
+    this._minuteBox?.unbindAndDisconnect();
+    this._secondBox?.unbindAndDisconnect();
+    this._binaryClock?.unbindAndDisconnect();
 
-    this._hourBox?.destroy?.();
-    this._minuteBox?.destroy?.();
-    this._secondBox?.destroy?.();
+    this._hourBox?.destroy();
+    this._minuteBox?.destroy();
+    this._secondBox?.destroy();
 
-    this._bcdClock?.destroy?.();
-    this._binaryClock?.destroy?.();
+    this._bcdClock?.destroy();
+    this._binaryClock?.destroy();
 
-    this._binWrapper?.destroy?.();
-    this._panelBtn?.destroy?.();
+    this._binWrapper?.destroy();
+    this._panelBtn?.destroy();
 
     /**
      * Finally, set everything to null. Checking for null before
@@ -334,6 +333,7 @@ export default class BinaryClock extends Extension {
     }
 
     const msLeft = DURATION - (msElapsed % DURATION);
+    clearTimeout(this._setTimeOutId);
     this._setTimeOutId = setTimeout(this.binaryClockHandler, msLeft);
   };
 }

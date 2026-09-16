@@ -9,7 +9,6 @@ import {
 export default class BinaryClockPreferences extends ExtensionPreferences {
   constructor(metadata) {
     super(metadata);
-    this.initTranslations();
   }
 
   fillPreferencesWindow(window) {
