@@ -89,6 +89,10 @@ export default class BinaryClock extends Extension {
     // Call this method after creating Binary and BCD clocks
     this.createUI();
 
+    this.bcdClockHandler = this.bcdClockHandler.bind(this);
+    this.binaryClockHandler = this.binaryClockHandler.bind(this);
+    this.openStateChangedHandler = this.openStateChangedHandler.bind(this);
+
     this._openStateChangedHandlerId = this._panelBtn.menu.connect(
       "open-state-changed",
       this.openStateChangedHandler,
@@ -221,35 +225,35 @@ export default class BinaryClock extends Extension {
     );
   }
 
-  clockTypeHandler = () => {
+  clockTypeHandler() {
     CLOCK_TYPE = this._settings.get_string("clock-type");
-  };
+  }
 
-  displayNumericClockBcdHandler = () => {
+  displayNumericClockBcdHandler() {
     DISPLAY_NUMERIC_CLOCK_BCD = this._settings.get_boolean(
       "display-numeric-clock-bcd",
     );
-  };
+  }
 
-  numericClockFormatBcdHandler = () => {
+  numericClockFormatBcdHandler() {
     NUMERIC_CLOCK_FORMAT_BCD = this._settings.get_string(
       "numeric-clock-format-bcd",
     );
-  };
+  }
 
-  displayNumericClockBin = () => {
+  displayNumericClockBin() {
     DISPLAY_NUMERIC_CLOCK_BIN = this._settings.get_boolean(
       "display-numeric-clock-bin",
     );
-  };
+  }
 
-  numericClockFormatBinHandler = () => {
+  numericClockFormatBinHandler() {
     NUMERIC_CLOCK_FORMAT_BIN = this._settings.get_string(
       "numeric-clock-format-bin",
     );
-  };
+  }
 
-  openStateChangedHandler = (_panelBtn, isOpen) => {
+  openStateChangedHandler(_panelBtn, isOpen) {
     if (isOpen) {
       this.createUI();
     }
@@ -277,7 +281,7 @@ export default class BinaryClock extends Extension {
         this._setIntervalId = null;
       }
     }
-  };
+  }
 
   createBCDclock() {
     this._setIntervalId = null;
@@ -299,7 +303,7 @@ export default class BinaryClock extends Extension {
     this._bcdClock.add_child(this._secondBox);
   }
 
-  bcdClockHandler = () => {
+  bcdClockHandler() {
     const date = new Date();
     let hours = date.getHours();
     if (NUMERIC_CLOCK_FORMAT_BCD === "twelve-hr-format" && hours > 12) {
@@ -309,9 +313,9 @@ export default class BinaryClock extends Extension {
     this._hourBox.setHour(hours);
     this._minuteBox.setValue(date.getMinutes());
     this._secondBox.setValue(date.getSeconds());
-  };
+  }
 
-  binaryClockHandler = () => {
+  binaryClockHandler() {
     const date = new Date();
     const hrs = date.getHours();
     const min = date.getMinutes();
@@ -335,5 +339,5 @@ export default class BinaryClock extends Extension {
     const msLeft = DURATION - (msElapsed % DURATION);
     clearTimeout(this._setTimeOutId);
     this._setTimeOutId = setTimeout(this.binaryClockHandler, msLeft);
-  };
+  }
 }
