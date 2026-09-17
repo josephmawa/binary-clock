@@ -3,12 +3,6 @@ import St from "gi://St";
 import Clutter from "gi://Clutter";
 import Gio from "gi://Gio";
 
-import { Extension } from "resource:///org/gnome/shell/extensions/extension.js";
-
-function getSettings() {
-  return Extension.lookupByURL(import.meta.url).getSettings();
-}
-
 const BitWidget = GObject.registerClass(
   {
     GTypeName: "BitWidget",
@@ -97,7 +91,7 @@ const Column = GObject.registerClass(
     },
   },
   class Column extends St.BoxLayout {
-    constructor(params = {}) {
+    constructor(params = {}, settings) {
       super({
         vertical: true,
         style: "spacing: 5px;",
@@ -175,7 +169,6 @@ const Column = GObject.registerClass(
 
       this.add_child(this._timeUnitWrapper);
 
-      const settings = getSettings();
       settings.bind(
         "display-numeric-clock-bcd",
         this._timeUnitWrapper,
@@ -236,7 +229,7 @@ export const Hour = GObject.registerClass(
     GTypeName: "Hour",
   },
   class Hour extends St.BoxLayout {
-    constructor(params = {}) {
+    constructor(params = {}, settings) {
       super({
         vertical: false,
         style: "spacing: 5px;",
@@ -251,8 +244,8 @@ export const Hour = GObject.registerClass(
       if (this.hour.length !== 2) {
         throw new Error("Hour must be 2 digits long");
       }
-      this.col1 = new Column({ len: 2, num: +this.hour[0] });
-      this.col2 = new Column({ len: 4, num: +this.hour[1] });
+      this.col1 = new Column({ len: 2, num: +this.hour[0] }, settings);
+      this.col2 = new Column({ len: 4, num: +this.hour[1] }, settings);
 
       this.add_child(this.col1);
       this.add_child(this.col2);
@@ -282,7 +275,7 @@ export const MinutesOrSeconds = GObject.registerClass(
     GTypeName: "MinutesOrSeconds",
   },
   class MinutesOrSeconds extends St.BoxLayout {
-    constructor(params = {}) {
+    constructor(params = {}, settings) {
       super({
         vertical: false,
         style: "spacing: 5px;",
@@ -297,8 +290,8 @@ export const MinutesOrSeconds = GObject.registerClass(
       if (this.value.length !== 2) {
         throw new Error("Minutes or Seconds must be 2 digits long");
       }
-      this.col1 = new Column({ len: 3, num: +this.value[0] });
-      this.col2 = new Column({ len: 4, num: +this.value[1] });
+      this.col1 = new Column({ len: 3, num: +this.value[0] }, settings);
+      this.col2 = new Column({ len: 4, num: +this.value[1] }, settings);
 
       this.add_child(this.col1);
       this.add_child(this.col2);
@@ -396,7 +389,7 @@ export const BinaryClock = GObject.registerClass(
     GTypeName: "BinaryClock",
   },
   class BinaryClock extends St.BoxLayout {
-    constructor(params = {}) {
+    constructor(params = {}, settings) {
       super({
         vertical: true,
         style: "spacing: 5px;",
@@ -414,7 +407,6 @@ export const BinaryClock = GObject.registerClass(
       });
       this.add_child(this._binaryClockLabel);
 
-      const settings = getSettings();
       settings.bind(
         "display-numeric-clock-bin",
         this._binaryClockLabel,

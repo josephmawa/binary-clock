@@ -84,6 +84,7 @@ export default class BinaryClock extends Extension {
     this._panelBtn.menu.addMenuItem(prefsSection);
 
     this.bindSettings();
+    // Call these after bindSettings because they need this._settings
     this.createBinClock();
     this.createBCDclock();
     // Call this method after creating Binary and BCD clocks
@@ -183,7 +184,7 @@ export default class BinaryClock extends Extension {
 
   createBinClock() {
     this._setTimeOutId = null;
-    this._binaryClock = new BCDModule.BinaryClock();
+    this._binaryClock = new BCDModule.BinaryClock({}, this._settings);
   }
 
   bindSettings() {
@@ -294,9 +295,15 @@ export default class BinaryClock extends Extension {
       y_align: Clutter.ActorAlign.CENTER,
     });
 
-    this._hourBox = new BCDModule.Hour({ hour: 0 });
-    this._minuteBox = new BCDModule.MinutesOrSeconds({ value: 0 });
-    this._secondBox = new BCDModule.MinutesOrSeconds({ value: 0 });
+    this._hourBox = new BCDModule.Hour({ hour: 0 }, this._settings);
+    this._minuteBox = new BCDModule.MinutesOrSeconds(
+      { value: 0 },
+      this._settings,
+    );
+    this._secondBox = new BCDModule.MinutesOrSeconds(
+      { value: 0 },
+      this._settings,
+    );
 
     this._bcdClock.add_child(this._hourBox);
     this._bcdClock.add_child(this._minuteBox);
