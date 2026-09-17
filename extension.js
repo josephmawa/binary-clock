@@ -272,6 +272,7 @@ export default class BinaryClock extends Extension {
 
     if (CLOCK_TYPE === "bcd" && isOpen) {
       this.bcdClockHandler();
+      clearInterval(this._setIntervalId);
       this._setIntervalId = setInterval(this.bcdClockHandler, 1000);
       return;
     }
