@@ -6,8 +6,8 @@ A nerdy Gnome shell extension that displays the current time in Decimal or Binar
 
 ## Install
 
-1. Navigate to [extensions.gnome.org](https://extensions.gnome.org/extension)
-2. To install, search for binary-clock
+1. Navigate to [extensions.gnome.org](https://extensions.gnome.org)
+2. Search for Binary Clock to install
 
 ## Contributing
 
